@@ -17,6 +17,9 @@ import { Route as AuthenticatedFollowingRouteImport } from './routes/_authentica
 import { Route as AiHandleRouteImport } from './routes/ai.$handle'
 import { Route as PostIdRouteImport } from './routes/post.$id'
 import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authenticated.account.index'
+import { Route as AuthenticatedAccountContentMaturityRouteImport } from './routes/_authenticated.account.content-maturity'
+import { Route as AuthenticatedAccountInfoRouteImport } from './routes/_authenticated.account.info'
+import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated.account.notifications'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +61,24 @@ const AuthenticatedAccountIndexRoute =
     path: '/account/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAccountContentMaturityRoute =
+  AuthenticatedAccountContentMaturityRouteImport.update({
+    id: '/account/content-maturity',
+    path: '/account/content-maturity',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAccountInfoRoute =
+  AuthenticatedAccountInfoRouteImport.update({
+    id: '/account/info',
+    path: '/account/info',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAccountNotificationsRoute =
+  AuthenticatedAccountNotificationsRouteImport.update({
+    id: '/account/notifications',
+    path: '/account/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +87,9 @@ export interface FileRoutesByFullPath {
   '/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
+  '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
+  '/account/info': typeof AuthenticatedAccountInfoRoute
+  '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/account/': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRoutesByTo {
@@ -75,6 +99,9 @@ export interface FileRoutesByTo {
   '/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
+  '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
+  '/account/info': typeof AuthenticatedAccountInfoRoute
+  '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/account': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRoutesById {
@@ -86,6 +113,9 @@ export interface FileRoutesById {
   '/_authenticated/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
+  '/_authenticated/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
+  '/_authenticated/account/info': typeof AuthenticatedAccountInfoRoute
+  '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRouteTypes {
@@ -97,6 +127,9 @@ export interface FileRouteTypes {
     | '/following'
     | '/ai/$handle'
     | '/post/$id'
+    | '/account/content-maturity'
+    | '/account/info'
+    | '/account/notifications'
     | '/account/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,6 +139,9 @@ export interface FileRouteTypes {
     | '/following'
     | '/ai/$handle'
     | '/post/$id'
+    | '/account/content-maturity'
+    | '/account/info'
+    | '/account/notifications'
     | '/account'
   id:
     | '__root__'
@@ -116,6 +152,9 @@ export interface FileRouteTypes {
     | '/_authenticated/following'
     | '/ai/$handle'
     | '/post/$id'
+    | '/_authenticated/account/content-maturity'
+    | '/_authenticated/account/info'
+    | '/_authenticated/account/notifications'
     | '/_authenticated/account/'
   fileRoutesById: FileRoutesById
 }
@@ -186,16 +225,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/account/content-maturity': {
+      id: '/_authenticated/account/content-maturity'
+      path: '/account/content-maturity'
+      fullPath: '/account/content-maturity'
+      preLoaderRoute: typeof AuthenticatedAccountContentMaturityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/account/info': {
+      id: '/_authenticated/account/info'
+      path: '/account/info'
+      fullPath: '/account/info'
+      preLoaderRoute: typeof AuthenticatedAccountInfoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/account/notifications': {
+      id: '/_authenticated/account/notifications'
+      path: '/account/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AuthenticatedAccountNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedFollowingRoute: typeof AuthenticatedFollowingRoute
+  AuthenticatedAccountContentMaturityRoute: typeof AuthenticatedAccountContentMaturityRoute
+  AuthenticatedAccountInfoRoute: typeof AuthenticatedAccountInfoRoute
+  AuthenticatedAccountNotificationsRoute: typeof AuthenticatedAccountNotificationsRoute
   AuthenticatedAccountIndexRoute: typeof AuthenticatedAccountIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFollowingRoute: AuthenticatedFollowingRoute,
+  AuthenticatedAccountContentMaturityRoute:
+    AuthenticatedAccountContentMaturityRoute,
+  AuthenticatedAccountInfoRoute: AuthenticatedAccountInfoRoute,
+  AuthenticatedAccountNotificationsRoute:
+    AuthenticatedAccountNotificationsRoute,
   AuthenticatedAccountIndexRoute: AuthenticatedAccountIndexRoute,
 }
 
