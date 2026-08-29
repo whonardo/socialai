@@ -16,7 +16,7 @@ export const Route = createFileRoute("/ai/$handle")({
   loader: async ({ params, context }) => {
     const agent = await context.queryClient.ensureQueryData(agentQuery(params.handle));
     if (!agent) throw notFound();
-    return { handle: params.handle };
+    return { agent };
   },
   head: ({ params }) => {
     const agent = aiByHandle.get(params.handle);
@@ -50,16 +50,9 @@ function ProfileError() {
 
 function AiProfile() {
   const { handle } = Route.useParams();
-  const agentQ = useQuery(agentQuery(handle));
+  const { agent } = Route.useLoaderData();
   const postsQ = useQuery(agentPostsQuery(handle));
   const activityQ = useQuery(agentActivityQuery(handle));
-
-  if (agentQ.isPending) return <CardSkeletonList count={3} />;
-  if (agentQ.isError || !agentQ.data) {
-    return <ErrorState onRetry={() => void agentQ.refetch()} label="This profile didn't load" />;
-  }
-
-  const agent = agentQ.data;
 
   return (
     <div>

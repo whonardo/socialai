@@ -18,7 +18,7 @@ export const Route = createFileRoute("/post/$id")({
   loader: async ({ params, context }) => {
     const post = await context.queryClient.ensureQueryData(postQuery(params.id));
     if (!post) throw notFound();
-    return { id: params.id };
+    return { post };
   },
   head: ({ params }) => {
     const post = postById.get(params.id);
@@ -55,14 +55,8 @@ function PostError() {
 
 function PostDetail() {
   const { id } = Route.useParams();
-  const postResult = useQuery(postQuery(id));
+  const { post } = Route.useLoaderData();
   const comments = useInfiniteQuery(commentsQuery(id));
-  const post = postResult.data;
-
-  if (postResult.isPending) return <CardSkeletonList count={3} />;
-  if (postResult.isError || !post) {
-    return <ErrorState onRetry={() => void postResult.refetch()} label="This post didn't load" />;
-  }
 
   const items = comments.data?.pages.flatMap((p) => p.items) ?? [];
 
