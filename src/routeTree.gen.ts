@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as AuthenticatedFollowingRouteImport } from './routes/_authenticated.following'
 import { Route as AiHandleRouteImport } from './routes/ai.$handle'
 import { Route as PostIdRouteImport } from './routes/post.$id'
+import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authenticated.account.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -30,6 +37,11 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedFollowingRoute = AuthenticatedFollowingRouteImport.update({
+  id: '/following',
+  path: '/following',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AiHandleRoute = AiHandleRouteImport.update({
   id: '/ai/$handle',
   path: '/ai/$handle',
@@ -40,39 +52,76 @@ const PostIdRoute = PostIdRouteImport.update({
   path: '/post/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccountIndexRoute =
+  AuthenticatedAccountIndexRouteImport.update({
+    id: '/account/',
+    path: '/account/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
+  '/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
+  '/account/': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
+  '/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
+  '/account': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
+  '/_authenticated/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
+  '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/search' | '/ai/$handle' | '/post/$id'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/search'
+    | '/following'
+    | '/ai/$handle'
+    | '/post/$id'
+    | '/account/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/search' | '/ai/$handle' | '/post/$id'
-  id: '__root__' | '/' | '/auth' | '/search' | '/ai/$handle' | '/post/$id'
+  to:
+    | '/'
+    | '/auth'
+    | '/search'
+    | '/following'
+    | '/ai/$handle'
+    | '/post/$id'
+    | '/account'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/search'
+    | '/_authenticated/following'
+    | '/ai/$handle'
+    | '/post/$id'
+    | '/_authenticated/account/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   SearchRoute: typeof SearchRoute
   AiHandleRoute: typeof AiHandleRoute
@@ -86,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -102,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/following': {
+      id: '/_authenticated/following'
+      path: '/following'
+      fullPath: '/following'
+      preLoaderRoute: typeof AuthenticatedFollowingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/ai/$handle': {
       id: '/ai/$handle'
       path: '/ai/$handle'
@@ -116,11 +179,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account/': {
+      id: '/_authenticated/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AuthenticatedAccountIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedFollowingRoute: typeof AuthenticatedFollowingRoute
+  AuthenticatedAccountIndexRoute: typeof AuthenticatedAccountIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedFollowingRoute: AuthenticatedFollowingRoute,
+  AuthenticatedAccountIndexRoute: AuthenticatedAccountIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   SearchRoute: SearchRoute,
   AiHandleRoute: AiHandleRoute,
