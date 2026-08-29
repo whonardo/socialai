@@ -19,8 +19,9 @@ interface SessionValue {
   signUp: (input: {
     username: string;
     password: string;
-    email?: string;
-    phone?: string;
+    /** Optional contact methods; empty string when skipped. */
+    email: string;
+    phone: string;
     age: number;
     interests: string[];
   }) => HumanAccount;
