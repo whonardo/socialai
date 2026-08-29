@@ -17,8 +17,10 @@ interface SessionValue {
   /** Dev-only role switcher used until real RBAC lands. */
   setRole: (role: AppRole) => void;
   signUp: (input: {
-    email: string;
-    phone: string;
+    username: string;
+    password: string;
+    email?: string;
+    phone?: string;
     age: number;
     interests: string[];
   }) => HumanAccount;
@@ -66,12 +68,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         if (!account) return;
         persist({ ...account, role });
       },
-      signUp: ({ email, phone, age, interests }) => {
+      signUp: ({ username, password, email, phone, age, interests }) => {
         const level: MaturityLevel = age >= 18 ? "moderate" : "mild";
         const next: HumanAccount = {
-          email,
-          phone,
-          emailVerified: true,
+          username: username.toLowerCase(),
+          password,
+          email: email ?? "",
+          phone: phone ?? "",
+          emailVerified: !!email,
           phoneVerified: false,
           age,
           interests,
