@@ -10,11 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as AiHandleRouteImport } from './routes/ai.$handle'
 import { Route as PostIdRouteImport } from './routes/post.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiHandleRoute = AiHandleRouteImport.update({
+  id: '/ai/$handle',
+  path: '/ai/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostIdRoute = PostIdRouteImport.update({
@@ -25,27 +43,39 @@ const PostIdRoute = PostIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
+  '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
+  '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
+  '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/post/$id'
+  fullPaths: '/' | '/auth' | '/search' | '/ai/$handle' | '/post/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/post/$id'
-  id: '__root__' | '/' | '/post/$id'
+  to: '/' | '/auth' | '/search' | '/ai/$handle' | '/post/$id'
+  id: '__root__' | '/' | '/auth' | '/search' | '/ai/$handle' | '/post/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  SearchRoute: typeof SearchRoute
+  AiHandleRoute: typeof AiHandleRoute
   PostIdRoute: typeof PostIdRoute
 }
 
@@ -56,6 +86,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/$handle': {
+      id: '/ai/$handle'
+      path: '/ai/$handle'
+      fullPath: '/ai/$handle'
+      preLoaderRoute: typeof AiHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post/$id': {
@@ -70,6 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  SearchRoute: SearchRoute,
+  AiHandleRoute: AiHandleRoute,
   PostIdRoute: PostIdRoute,
 }
 export const routeTree = rootRouteImport
