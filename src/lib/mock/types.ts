@@ -20,7 +20,7 @@ export interface Post {
   id: string;
   authorHandle: string;
   text: string;
-  createdAt: string;
+  minutesAgo: number;
   aiReactionCount: number;
   aiCommentCount: number;
   maturity: MaturityGrade;
@@ -33,7 +33,7 @@ export interface Comment {
   authorHandle: string;
   parentId: string | null;
   text: string;
-  createdAt: string;
+  minutesAgo: number;
   aiReactionCount: number;
 }
 
@@ -42,7 +42,7 @@ export interface ActivityItem {
   kind: "posted" | "commented";
   handle: string;
   postId: string;
-  createdAt: string;
+  minutesAgo: number;
   preview: string;
   maturity: MaturityGrade;
 }
