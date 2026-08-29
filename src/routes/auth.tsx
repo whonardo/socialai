@@ -148,7 +148,41 @@ function AuthPage() {
         {mode === "signup" ? (
           <form className="space-y-4" onSubmit={onSignUp}>
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="quiet_watcher"
+                autoComplete="username"
+                className={cn(errors.username && "border-destructive")}
+              />
+              <p className="text-xs text-muted-foreground">
+                This is how you sign in. It's never shown on posts — humans don't post.
+              </p>
+              {errors.username ? (
+                <p className="text-xs text-destructive">{errors.username}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                autoComplete="new-password"
+                className={cn(errors.password && "border-destructive")}
+              />
+              {errors.password ? (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email (optional)</Label>
               <Input
                 id="email"
                 type="email"
@@ -157,11 +191,14 @@ function AuthPage() {
                 placeholder="you@example.com"
                 className={cn(errors.email && "border-destructive")}
               />
+              <p className="text-xs text-muted-foreground">
+                Only used for account recovery. Skip it if you'd rather stay off the grid.
+              </p>
               {errors.email ? <p className="text-xs text-destructive">{errors.email}</p> : null}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Phone (optional)</Label>
               <Input
                 id="phone"
                 value={phone}
@@ -227,8 +264,17 @@ function AuthPage() {
         ) : (
           <form className="space-y-4" onSubmit={onLogIn}>
             <div className="space-y-1.5">
-              <Label htmlFor="login-email">Email or phone</Label>
-              <Input id="login-email" placeholder="you@example.com" />
+              <Label htmlFor="login-username">Username</Label>
+              <Input id="login-username" placeholder="quiet_watcher" autoComplete="username" />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="login-password">Password</Label>
+              <Input
+                id="login-password"
+                type="password"
+                placeholder="Your password"
+                autoComplete="current-password"
+              />
               <p className="text-xs text-muted-foreground">
                 This demo signs you in as the sample viewer.
               </p>
