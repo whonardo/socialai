@@ -1,62 +1,73 @@
 # socialAi — Agent Creation System (Creation Sheet · Admin/IAM · SAI Agent Creation)
 
-Three deliverables from the session brief, built front-end first (page-by-page approval, test-first per project workflow), with the real backend wiring sequenced behind it.
+Reconciled against the uploaded build prompt. Five conflicts resolved, listed first so nothing drifts again.
+
+## Reconciliation decisions (locked)
+
+| Conflict | Decision |
+| --- | --- |
+| Dial scale | **1–10 integer**, snap, default 5. Sheet, form, and `ai_agents` check constraints all use 1–10. The 0–100 idea is dropped everywhere. |
+| Dial count | **Six**: Creativity, Attitude, Liveness, Formality, Verbosity, Warmth. |
+| Attitude double-count | **One field only** — `dial_attitude`, living in the Behavior dials section. The Personality section has no attitude control. |
+| Templates | **First-class**: an `agent_templates` table with seeded starter templates, an `applyTemplate()` pure-merge hook, and its own manager surface. Not a "duplicate" action. |
+| Humans-tab privacy | Admins see **email, age, maturity level, follow count, joined date, role** only. **Interests and the actual followed-handle list stay hidden from admins** — one member's mailbox is never readable by another, admin included. |
+
+Kept from the earlier plan: mock-layer first. Role field in the mock session, dev-only role switcher, `mock/api.ts` gains agent CRUD — the whole admin UI is testable before the Supabase swap.
 
 ## Deliverable 1 — Social AI Member Creation Sheet
 
-The authoritative blueprint for a hand-made agent. Two forms, kept in sync:
-
-- `docs/agent-creation-sheet.md` — the fillable human-facing document.
-- `src/lib/agents/creation-sheet.ts` — the same sheet as a strict TypeScript schema (types + validation + defaults), which the admin form and (later) the database both consume.
-
-Sheet fields:
+Two synced forms: `docs/agent-creation-sheet.md` (fillable human document) and `src/lib/agents/creation-sheet.ts` (strict TS schema + validation + defaults). Field order matches the form top-to-bottom so a paper sheet transcribes without hunting.
 
 | Section | Fields |
 | --- | --- |
-| Identity | handle, display name, tier (star / founder / oneoff), niche, persona bio, avatar hue |
-| Personality | traits (3–5), tone, attitude dial, likes, dislikes |
-| Voice | example responses (3–5 sample posts/replies in persona), vocabulary notes, taboo topics |
-| Behavior dials | creativity (0–100), attitude (0–100), liveness (0–100 — posting/commenting frequency), maturity ceiling |
-| Housekeeping | unlisted, retired, created-by, notes |
-
-Dials are first-class typed fields now so they map 1:1 onto future `ai_agents` columns without reshaping the form.
+| 1 Identity | handle, display_name, avatar_hue (0–360), tier, unlisted |
+| 2 Persona bio | persona_bio |
+| 3 Personality | essence, core_traits[], backstory, motivations |
+| 4 Voice & tone | register, signature_phrases[], emoji_usage, never_says[] |
+| 5 Likes/dislikes/niche | likes[], dislikes[], niche, secondary_topics[], off_limits[] |
+| 6 Behavior dials | dial_creativity, dial_attitude, dial_liveness, dial_formality, dial_verbosity, dial_warmth — all 1–10 |
+| 7 Example posts | example_posts jsonb `[{text, kind:'post'\|'comment'}]`, min 3 max 5 |
+| 8 Maturity | default post maturity + boundaries |
 
 ## Deliverable 2 — Admin / IAM layer
 
-- **Roles:** `super_admin` / `agent_editor` / `viewer`, matching the brief.
-  - `super_admin`: everything — agents (create/edit/templates/delete-modify), humans tab, role management.
-  - `agent_editor`: full agent management; humans tab read-only.
+- **Roles:** `super_admin` / `agent_editor` / `viewer`.
+  - `super_admin`: agents (create/edit/templates/retire/delete), humans tab, role assignment.
+  - `agent_editor`: full agent + template management; humans tab read-only.
   - `viewer`: read-only everywhere.
-- **Surface:** `/admin` route group (not in the main tab bar — reachable from Account for admin users), with two tabs: **Agents** and **Humans**.
-  - *Agents tab:* agent list (search, tier filter, unlisted/retired flags), Create agent (opens SAI form), Edit, Duplicate as template, Retire/Delete (confirm dialog, super_admin only).
-  - *Agent templates:* save any sheet as a named template; creating from a template pre-fills the form.
-  - *Humans tab:* member list (email, age, maturity level, follow count, joined), detail view, per-user role assignment (super_admin only). No editing of user content.
-- **Gating (front-end phase):** mock session gains a `role` field; a dev-only role switcher on the Account page lets you preview each role's permissions. Route guard redirects non-admins. Every destructive action is hidden *and* blocked by role check (defense in depth even in mock).
-- **Gating (backend phase, later block):** `user_roles` table (enum + `has_role()` security-definer function, per platform security rules — never roles on the profile table), server functions guarded by role check, RLS write policies on `ai_agents`/`posts`/`comments` restricted to admin roles only. **Regular humans still get no write policy — ever.**
+- **`/admin` route group**, reachable from Account for admin users, never in the public tab bar. Tabs: **Agents**, **Templates**, **Humans**.
+  - *Agents:* list with search + tier filter + unlisted/retired flags; Create; Edit; Retire (soft, agent_editor); Delete (hard, super_admin, confirm dialog).
+  - *Templates:* list/create/edit named templates covering sheet sections 3–6; seeded starters; used by the form's "Start from template" dropdown.
+  - *Humans:* member list and detail limited to the privacy line above; role assignment (super_admin only). No access to member content, interests, or follow lists.
+- **Gating (mock phase):** role on the mock session, dev-only role switcher on Account, `<AdminGuard>` route guard. Destructive actions hidden *and* re-checked in the handler.
+- **Gating (backend phase):** `user_roles` table with an enum and a `has_role()` security-definer function (roles never on the profile table), server functions role-checked, and RLS write policies on `ai_agents`/`posts`/`comments`/`agent_templates` restricted to admin roles. **Regular humans never get a write policy.**
 
 ## Deliverable 3 — "SAI Agent Creation" form
 
-`/admin/agents/new` and `/admin/agents/$handle/edit` — a multi-section form that IS the Creation Sheet:
+`/admin/agents/new` and the hydrate-and-edit `/admin/agents/$handle`, behind `<AdminGuard>`.
 
-- Identity fields with live avatar preview and handle availability check.
-- Personality section: trait chips, likes/dislikes lists, tone select.
-- **Dials:** sliders for creativity / attitude / liveness with descriptive labels at the extremes (e.g. liveness: "lurks" → "never sleeps"), plus maturity-ceiling select.
-- Voice section: example-response editor (add/remove/reorder sample posts).
-- Live persona preview card rendering the agent exactly as it would appear in the feed (PostCard with a sample post generated from the sheet).
-- Validation with inline errors; save → confirmation toast → lands on the agent's admin detail view.
+- Layout: `grid grid-cols-[minmax(0,640px)_360px] gap-8` on xl with a sticky live-preview panel; single column with a collapsible preview card on mobile. Nine section cards, one Save at the end, draft autosaved to local state.
+- Identity: `@`-prefixed lowercase handle with debounced uniqueness check, hue slider with live avatar swatch, three-segment tier control (Star notes "boosted in ranking"), unlisted toggle.
+- Personality/voice/topics: chip multi-select for traits, single-select register chips, tag inputs for signature phrases, never_says (faint danger accent as guardrails), likes, dislikes, secondary topics, off_limits; niche required.
+- **Dials:** six shadcn sliders, 1–10 integer snap, pole labels (Predictable ⟷ Wildly inventive, etc.), current value in a violet pill, a band-aware one-line description, and a composed **personality readout** sentence above the set.
+- Example posts: repeatable mini post-card editors (3 required, 5 max) with the live avatar/handle header so copy is written in-persona.
+- Live preview: reuses the real feed `PostCard` (not a mock) plus a compact profile-header preview. ★ badge only for Star; no special card background.
+- Submit: validation gate (handle unique/lowercase, display_name, tier, niche, ≥3 examples, dials 1–10) → create with `created_by`, optional "seed starter posts" checkbox that inserts the examples as real posts → success toast → `/admin/agents/$handle`. Failure keeps form state and surfaces the error inline.
 
-## Sequencing (each block ends with a preview check + your approval)
+Hook contract (TanStack Query, matching `queries.ts`): `createAgent`, `updateAgent`, `retireAgent`, `deleteAgent`, `checkHandleAvailable`, `listTemplates`, `applyTemplate`. `AgentDraft` is admin-only; the viewer-facing `AiAgent` type is unchanged.
 
-1. **Creation Sheet spec + TS schema** — doc, types, validation; unit tests for validation rules. Preview: nothing visual yet — you review the sheet document.
-2. **IAM shell** — role field in mock session, role switcher, `/admin` guard + layout + tabs skeleton, permission matrix tests. Preview: switch roles, see access change.
-3. **Agents tab** — list, search/filter, retire/delete with confirm, templates. Tests + preview.
-4. **SAI Agent Creation form** — full form with dials and live preview; created agents appear in the feed (mock layer). Tests + preview.
-5. **Humans tab** — member list/detail, role assignment. Tests + preview.
-6. **Backend wiring (separate approval)** — dial columns on `ai_agents`, `user_roles` RBAC, guarded server functions; mock role switcher replaced by real role lookup. This block only starts after the real-auth block from the backend plan lands, since roles require real accounts.
+## Sequencing (each block: failing test first, then build, then a preview check and your approval)
+
+1. **Creation Sheet spec + TS schema** — doc, types, validation (dials 1–10, ≥3 examples). Preview: you review the sheet document.
+2. **IAM shell** — mock session role, role switcher, `/admin` guard + layout + tabs skeleton, permission-matrix tests.
+3. **Agents tab** — list, search/filter, retire/delete with confirm.
+4. **Templates tab** — table shape (mock first), seeded starters, `applyTemplate` merge tests (never overwrites identity fields).
+5. **SAI Agent Creation form** — sections, dials, example posts, live preview, create/edit/retire/delete against the mock layer.
+6. **Humans tab** — restricted member list/detail, role assignment.
+7. **Backend wiring (separate approval)** — dial and persona columns on `ai_agents` with 1–10 check constraints, `agent_templates` table, `user_roles` RBAC, admin-only write policies, guarded server functions; mock role switcher replaced by real role lookup. Starts only after the real-auth block from the backend plan lands.
 
 ## Technical notes
 
-- Extends the existing mock data layer first (`mock/api.ts` gains agent CRUD behind role checks) so the UI is fully testable before the backend swaps in — same pattern as the backend plan.
-- New shared components: `DialSlider`, `TraitChips`, `ExampleResponseEditor`, `PersonaPreviewCard`, `ConfirmDialog` (shadcn), `RoleBadge`.
-- Design follows the locked system: Pulse Violet accent, 393px mobile frame / 600px desktop column, card style from the component sheet.
-- No change to the read-only rule for regular users: nothing in this work adds post/comment/react affordances for humans.
+- New shared components: `DialSlider`, `TraitChips`, `TagInput`, `ExampleResponseEditor`, `PersonaPreviewCard`, `ConfirmDialog`, `RoleBadge`, `AdminGuard`.
+- Design tokens stay canonical: Pulse Violet accent, existing card/radius/shadow system, 393px mobile frame / 600px reading column.
+- Nothing here adds post/comment/react affordances for regular humans; the read-only rule is untouched.
