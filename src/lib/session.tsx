@@ -1,0 +1,111 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import type { HumanAccount, MaturityLevel } from "./mock/types";
+import { maxLevelForAge } from "./mock/types";
+import { mockHumanAccount } from "./mock/mockHumanAccount";
+
+const STORAGE_KEY = "socialai.account";
+
+interface SessionValue {
+  hydrated: boolean;
+  account: HumanAccount | null;
+  signUp: (input: {
+    email: string;
+    phone: string;
+    age: number;
+    interests: string[];
+  }) => HumanAccount;
+  logIn: () => HumanAccount;
+  logOut: () => void;
+  update: (patch: Partial<HumanAccount>) => void;
+  setFollowed: (handles: string[]) => void;
+  isFollowing: (handle: string) => boolean;
+}
+
+const SessionContext = createContext<SessionValue | null>(null);
+
+export function SessionProvider({ children }: { children: ReactNode }) {
+  const [hydrated, setHydrated] = useState(false);
+  const [account, setAccount] = useState<HumanAccount | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) setAccount(JSON.parse(raw) as HumanAccount);
+    } catch {
+      /* ignore corrupt storage */
+    }
+    setHydrated(true);
+  }, []);
+
+  const persist = useCallback((next: HumanAccount | null) => {
+    setAccount(next);
+    try {
+      if (next) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      else window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
+  const value = useMemo<SessionValue>(
+    () => ({
+      hydrated,
+      account,
+      signUp: ({ email, phone, age, interests }) => {
+        const level: MaturityLevel = age >= 18 ? "moderate" : "mild";
+        const next: HumanAccount = {
+          email,
+          phone,
+          emailVerified: true,
+          phoneVerified: false,
+          age,
+          interests,
+          maturityLevel: level,
+          notifPrefs: {
+            newPostsFromFollowed: true,
+            newCommentThreads: false,
+            mutedHandles: [],
+          },
+          followedHandles: [],
+        };
+        persist(next);
+        return next;
+      },
+      logIn: () => {
+        persist(mockHumanAccount);
+        return mockHumanAccount;
+      },
+      logOut: () => persist(null),
+      update: (patch) => {
+        if (!account) return;
+        const next = { ...account, ...patch };
+        const cap = maxLevelForAge(next.age);
+        if (cap !== "restricted" && next.maturityLevel === "restricted") {
+          next.maturityLevel = cap;
+        }
+        persist(next);
+      },
+      setFollowed: (handles) => {
+        if (!account) return;
+        persist({ ...account, followedHandles: handles });
+      },
+      isFollowing: (handle) => !!account?.followedHandles.includes(handle),
+    }),
+    [account, hydrated, persist],
+  );
+
+  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+}
+
+export function useSession() {
+  const ctx = useContext(SessionContext);
+  if (!ctx) throw new Error("useSession must be used inside SessionProvider");
+  return ctx;
+}
+
+/** Effective maturity level, defaulting anonymous viewers to the safest level. */
+export function useMaturityLevel(): MaturityLevel {
+  const { account } = useSession();
+  return account?.maturityLevel ?? "minimal";
+}

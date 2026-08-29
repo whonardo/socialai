@@ -10,33 +10,161 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as AuthenticatedFollowingRouteImport } from './routes/_authenticated.following'
+import { Route as AiHandleRouteImport } from './routes/ai.$handle'
+import { Route as PostIdRouteImport } from './routes/post.$id'
+import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authenticated.account.index'
+import { Route as AuthenticatedAccountContentMaturityRouteImport } from './routes/_authenticated.account.content-maturity'
+import { Route as AuthenticatedAccountInfoRouteImport } from './routes/_authenticated.account.info'
+import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated.account.notifications'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedFollowingRoute = AuthenticatedFollowingRouteImport.update({
+  id: '/following',
+  path: '/following',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AiHandleRoute = AiHandleRouteImport.update({
+  id: '/ai/$handle',
+  path: '/ai/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostIdRoute = PostIdRouteImport.update({
+  id: '/post/$id',
+  path: '/post/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAccountIndexRoute =
+  AuthenticatedAccountIndexRouteImport.update({
+    id: '/account/',
+    path: '/account/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAccountContentMaturityRoute =
+  AuthenticatedAccountContentMaturityRouteImport.update({
+    id: '/account/content-maturity',
+    path: '/account/content-maturity',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAccountInfoRoute =
+  AuthenticatedAccountInfoRouteImport.update({
+    id: '/account/info',
+    path: '/account/info',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAccountNotificationsRoute =
+  AuthenticatedAccountNotificationsRouteImport.update({
+    id: '/account/notifications',
+    path: '/account/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
+  '/following': typeof AuthenticatedFollowingRoute
+  '/ai/$handle': typeof AiHandleRoute
+  '/post/$id': typeof PostIdRoute
+  '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
+  '/account/info': typeof AuthenticatedAccountInfoRoute
+  '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/account/': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
+  '/following': typeof AuthenticatedFollowingRoute
+  '/ai/$handle': typeof AiHandleRoute
+  '/post/$id': typeof PostIdRoute
+  '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
+  '/account/info': typeof AuthenticatedAccountInfoRoute
+  '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/account': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
+  '/_authenticated/following': typeof AuthenticatedFollowingRoute
+  '/ai/$handle': typeof AiHandleRoute
+  '/post/$id': typeof PostIdRoute
+  '/_authenticated/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
+  '/_authenticated/account/info': typeof AuthenticatedAccountInfoRoute
+  '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/search'
+    | '/following'
+    | '/ai/$handle'
+    | '/post/$id'
+    | '/account/content-maturity'
+    | '/account/info'
+    | '/account/notifications'
+    | '/account/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/search'
+    | '/following'
+    | '/ai/$handle'
+    | '/post/$id'
+    | '/account/content-maturity'
+    | '/account/info'
+    | '/account/notifications'
+    | '/account'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/search'
+    | '/_authenticated/following'
+    | '/ai/$handle'
+    | '/post/$id'
+    | '/_authenticated/account/content-maturity'
+    | '/_authenticated/account/info'
+    | '/_authenticated/account/notifications'
+    | '/_authenticated/account/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  SearchRoute: typeof SearchRoute
+  AiHandleRoute: typeof AiHandleRoute
+  PostIdRoute: typeof PostIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +176,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/following': {
+      id: '/_authenticated/following'
+      path: '/following'
+      fullPath: '/following'
+      preLoaderRoute: typeof AuthenticatedFollowingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/ai/$handle': {
+      id: '/ai/$handle'
+      path: '/ai/$handle'
+      fullPath: '/ai/$handle'
+      preLoaderRoute: typeof AiHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post/$id': {
+      id: '/post/$id'
+      path: '/post/$id'
+      fullPath: '/post/$id'
+      preLoaderRoute: typeof PostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/account/': {
+      id: '/_authenticated/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AuthenticatedAccountIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/account/content-maturity': {
+      id: '/_authenticated/account/content-maturity'
+      path: '/account/content-maturity'
+      fullPath: '/account/content-maturity'
+      preLoaderRoute: typeof AuthenticatedAccountContentMaturityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/account/info': {
+      id: '/_authenticated/account/info'
+      path: '/account/info'
+      fullPath: '/account/info'
+      preLoaderRoute: typeof AuthenticatedAccountInfoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/account/notifications': {
+      id: '/_authenticated/account/notifications'
+      path: '/account/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AuthenticatedAccountNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedFollowingRoute: typeof AuthenticatedFollowingRoute
+  AuthenticatedAccountContentMaturityRoute: typeof AuthenticatedAccountContentMaturityRoute
+  AuthenticatedAccountInfoRoute: typeof AuthenticatedAccountInfoRoute
+  AuthenticatedAccountNotificationsRoute: typeof AuthenticatedAccountNotificationsRoute
+  AuthenticatedAccountIndexRoute: typeof AuthenticatedAccountIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedFollowingRoute: AuthenticatedFollowingRoute,
+  AuthenticatedAccountContentMaturityRoute:
+    AuthenticatedAccountContentMaturityRoute,
+  AuthenticatedAccountInfoRoute: AuthenticatedAccountInfoRoute,
+  AuthenticatedAccountNotificationsRoute:
+    AuthenticatedAccountNotificationsRoute,
+  AuthenticatedAccountIndexRoute: AuthenticatedAccountIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
+  SearchRoute: SearchRoute,
+  AiHandleRoute: AiHandleRoute,
+  PostIdRoute: PostIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
