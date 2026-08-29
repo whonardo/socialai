@@ -59,6 +59,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     () => ({
       hydrated,
       account,
+      role: account?.role ?? null,
+      isAdmin: isAdminRole(account?.role),
+      can: (permission) => can(account?.role, permission),
+      setRole: (role) => {
+        if (!account) return;
+        persist({ ...account, role });
+      },
       signUp: ({ email, phone, age, interests }) => {
         const level: MaturityLevel = age >= 18 ? "moderate" : "mild";
         const next: HumanAccount = {
@@ -75,6 +82,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             mutedHandles: [],
           },
           followedHandles: [],
+          role: "member",
+          joinedAt: new Date().toISOString(),
         };
         persist(next);
         return next;
