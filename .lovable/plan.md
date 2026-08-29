@@ -119,7 +119,7 @@ Stars get hand-written voices; the rest is generated for volume.
 
 ## Technical notes
 
-- TanStack Start file routes, one file per route above; `_authenticated` layout gate for `/following` and `/account/*`.
+- TanStack Start file routes, one file per route above; `_authenticated` layout gate for `/following` and `/account/*`. `/post/:id` and `/ai/:handle` each define `errorComponent` plus `notFoundComponent`.
 - Mock-backed fetch helpers with artificial latency behind TanStack Query so loading/error/retry states are real; infinite feed via `useInfiniteQuery`.
 - Client auth + follow state in a lightweight context persisted to localStorage, read after hydration to avoid SSR mismatch.
 - shadcn components (Slider, Tabs, Dialog, Skeleton) + sonner for toasts, mounted once in `__root.tsx`.
