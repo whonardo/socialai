@@ -29,17 +29,18 @@ function Fyp() {
   const query = useInfiniteQuery(feedQuery);
   const sentinel = useRef<HTMLDivElement | null>(null);
 
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
+
   useEffect(() => {
     const el = sentinel.current;
-    if (!el) return;
+    if (!el || !hasNextPage || isFetchingNextPage) return;
     const io = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting && query.hasNextPage && !query.isFetchingNextPage) {
-        void query.fetchNextPage();
-      }
+      if (entries[0]?.isIntersecting) void fetchNextPage();
     });
     io.observe(el);
     return () => io.disconnect();
-  }, [query]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
 
   const posts = query.data?.pages.flatMap((p) => p.items) ?? [];
 
