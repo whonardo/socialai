@@ -14,42 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          name: string
+          patch: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id: string
+          name: string
+          patch?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          name?: string
+          patch?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_agents: {
         Row: {
           ai_following_count: number
           avatar_hue: number
+          backstory: string
+          boundaries: string
+          core_traits: string[]
           created_at: string
+          created_by: string | null
+          default_maturity: Database["public"]["Enums"]["maturity_grade"]
+          dial_attitude: number
+          dial_creativity: number
+          dial_formality: number
+          dial_liveness: number
+          dial_verbosity: number
+          dial_warmth: number
+          dislikes: string[]
           display_name: string
+          emoji_usage: string
+          essence: string
+          example_posts: Json
           handle: string
           human_follower_count: number
+          likes: string[]
+          motivations: string
+          never_says: string[]
+          niche: string
+          off_limits: string[]
           persona_bio: string
+          register: string
           retired: boolean
+          secondary_topics: string[]
+          signature_phrases: string[]
           tier: Database["public"]["Enums"]["ai_tier"]
           unlisted: boolean
+          updated_at: string
         }
         Insert: {
           ai_following_count?: number
           avatar_hue?: number
+          backstory?: string
+          boundaries?: string
+          core_traits?: string[]
           created_at?: string
+          created_by?: string | null
+          default_maturity?: Database["public"]["Enums"]["maturity_grade"]
+          dial_attitude?: number
+          dial_creativity?: number
+          dial_formality?: number
+          dial_liveness?: number
+          dial_verbosity?: number
+          dial_warmth?: number
+          dislikes?: string[]
           display_name: string
+          emoji_usage?: string
+          essence?: string
+          example_posts?: Json
           handle: string
           human_follower_count?: number
+          likes?: string[]
+          motivations?: string
+          never_says?: string[]
+          niche?: string
+          off_limits?: string[]
           persona_bio?: string
+          register?: string
           retired?: boolean
+          secondary_topics?: string[]
+          signature_phrases?: string[]
           tier: Database["public"]["Enums"]["ai_tier"]
           unlisted?: boolean
+          updated_at?: string
         }
         Update: {
           ai_following_count?: number
           avatar_hue?: number
+          backstory?: string
+          boundaries?: string
+          core_traits?: string[]
           created_at?: string
+          created_by?: string | null
+          default_maturity?: Database["public"]["Enums"]["maturity_grade"]
+          dial_attitude?: number
+          dial_creativity?: number
+          dial_formality?: number
+          dial_liveness?: number
+          dial_verbosity?: number
+          dial_warmth?: number
+          dislikes?: string[]
           display_name?: string
+          emoji_usage?: string
+          essence?: string
+          example_posts?: Json
           handle?: string
           human_follower_count?: number
+          likes?: string[]
+          motivations?: string
+          never_says?: string[]
+          niche?: string
+          off_limits?: string[]
           persona_bio?: string
+          register?: string
           retired?: boolean
+          secondary_topics?: string[]
+          signature_phrases?: string[]
           tier?: Database["public"]["Enums"]["ai_tier"]
           unlisted?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
@@ -146,15 +248,43 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       ai_tier: "star" | "founder" | "oneoff"
+      app_role: "super_admin" | "agent_editor" | "viewer"
       maturity_grade: "none" | "mild" | "moderate" | "mature"
       maturity_level: "minimal" | "mild" | "moderate" | "restricted"
     }
@@ -285,6 +415,7 @@ export const Constants = {
   public: {
     Enums: {
       ai_tier: ["star", "founder", "oneoff"],
+      app_role: ["super_admin", "agent_editor", "viewer"],
       maturity_grade: ["none", "mild", "moderate", "mature"],
       maturity_level: ["minimal", "mild", "moderate", "restricted"],
     },
