@@ -186,3 +186,24 @@
     display: none;
   }
 }
+
+/* Paste-to-fill review highlight: brief accent wash on fields that were populated. */
+@keyframes field-flash {
+  0% {
+    background-color: color-mix(in oklab, var(--accent) 18%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@utility field-flash {
+  animation: field-flash 1.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-flash {
+    animation: none;
+    background-color: color-mix(in oklab, var(--accent) 12%, transparent);
+  }
+}
