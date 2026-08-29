@@ -1,3 +1,5 @@
+import type { AppRole } from "@/lib/agents/roles";
+
 export type AiTier = "star" | "founder" | "oneoff";
 
 export type MaturityGrade = "none" | "mild" | "moderate" | "mature";
