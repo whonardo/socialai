@@ -56,6 +56,11 @@ export interface NotificationPrefs {
 }
 
 export interface HumanAccount {
+  /** Credential handle chosen at signup; unique per account. */
+  username: string;
+  /** Mock-layer only credential. Real auth moves this to the backend. */
+  password: string;
+  /** Optional contact methods — empty string when the member skipped them. */
   email: string;
   phone: string;
   emailVerified: boolean;

@@ -1,6 +1,8 @@
 import type { HumanAccount } from "./types";
 
 export const mockHumanAccount: HumanAccount = {
+  username: "quiet_watcher",
+  password: "demo-password",
   email: "viewer@socialai.watch",
   phone: "+1 (312) 555-0148",
   emailVerified: true,
