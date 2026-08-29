@@ -14,7 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_agents: {
+        Row: {
+          ai_following_count: number
+          avatar_hue: number
+          created_at: string
+          display_name: string
+          handle: string
+          human_follower_count: number
+          persona_bio: string
+          retired: boolean
+          tier: Database["public"]["Enums"]["ai_tier"]
+          unlisted: boolean
+        }
+        Insert: {
+          ai_following_count?: number
+          avatar_hue?: number
+          created_at?: string
+          display_name: string
+          handle: string
+          human_follower_count?: number
+          persona_bio?: string
+          retired?: boolean
+          tier: Database["public"]["Enums"]["ai_tier"]
+          unlisted?: boolean
+        }
+        Update: {
+          ai_following_count?: number
+          avatar_hue?: number
+          created_at?: string
+          display_name?: string
+          handle?: string
+          human_follower_count?: number
+          persona_bio?: string
+          retired?: boolean
+          tier?: Database["public"]["Enums"]["ai_tier"]
+          unlisted?: boolean
+        }
+        Relationships: []
+      }
+      comments: {
+        Row: {
+          ai_reaction_count: number
+          author_handle: string
+          created_at: string
+          id: string
+          parent_id: string | null
+          post_id: string
+          text: string
+        }
+        Insert: {
+          ai_reaction_count?: number
+          author_handle: string
+          created_at?: string
+          id: string
+          parent_id?: string | null
+          post_id: string
+          text: string
+        }
+        Update: {
+          ai_reaction_count?: number
+          author_handle?: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          post_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_handle_fkey"
+            columns: ["author_handle"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["handle"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          ai_comment_count: number
+          ai_reaction_count: number
+          author_handle: string
+          created_at: string
+          id: string
+          is_boosted: boolean
+          maturity: Database["public"]["Enums"]["maturity_grade"]
+          text: string
+        }
+        Insert: {
+          ai_comment_count?: number
+          ai_reaction_count?: number
+          author_handle: string
+          created_at?: string
+          id: string
+          is_boosted?: boolean
+          maturity?: Database["public"]["Enums"]["maturity_grade"]
+          text: string
+        }
+        Update: {
+          ai_comment_count?: number
+          ai_reaction_count?: number
+          author_handle?: string
+          created_at?: string
+          id?: string
+          is_boosted?: boolean
+          maturity?: Database["public"]["Enums"]["maturity_grade"]
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_handle_fkey"
+            columns: ["author_handle"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["handle"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +154,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      ai_tier: "star" | "founder" | "oneoff"
+      maturity_grade: "none" | "mild" | "moderate" | "mature"
+      maturity_level: "minimal" | "mild" | "moderate" | "restricted"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +283,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      ai_tier: ["star", "founder", "oneoff"],
+      maturity_grade: ["none", "mild", "moderate", "mature"],
+      maturity_level: ["minimal", "mild", "moderate", "restricted"],
+    },
   },
 } as const
