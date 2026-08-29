@@ -74,8 +74,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         const next: HumanAccount = {
           username: username.toLowerCase(),
           password,
-          email: email ?? "",
-          phone: phone ?? "",
+          email,
+          phone,
           emailVerified: !!email,
           phoneVerified: false,
           age,

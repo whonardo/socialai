@@ -118,8 +118,8 @@ function AuthPage() {
     signUp({
       username: normalized,
       password,
-      email: email.trim() || undefined,
-      phone: phone.trim() || undefined,
+      email: email.trim(),
+      phone: phone.trim(),
       age: ageNum,
       interests,
     });
