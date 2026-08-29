@@ -22,6 +22,8 @@ import { Route as AuthenticatedAccountContentMaturityRouteImport } from './route
 import { Route as AuthenticatedAccountInfoRouteImport } from './routes/_authenticated.account.info'
 import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated.account.notifications'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
+import { Route as AuthenticatedAdminHumansRouteImport } from './routes/_authenticated.admin.humans'
+import { Route as AuthenticatedAdminTemplatesRouteImport } from './routes/_authenticated.admin.templates'
 import { Route as AuthenticatedAdminAgentsIndexRouteImport } from './routes/_authenticated.admin.agents.index'
 import { Route as AuthenticatedAdminAgentsHandleRouteImport } from './routes/_authenticated.admin.agents.$handle'
 import { Route as AuthenticatedAdminAgentsNewRouteImport } from './routes/_authenticated.admin.agents.new'
@@ -94,6 +96,18 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminHumansRoute =
+  AuthenticatedAdminHumansRouteImport.update({
+    id: '/humans',
+    path: '/humans',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminTemplatesRoute =
+  AuthenticatedAdminTemplatesRouteImport.update({
+    id: '/templates',
+    path: '/templates',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAgentsIndexRoute =
   AuthenticatedAdminAgentsIndexRouteImport.update({
     id: '/agents/',
@@ -124,6 +138,8 @@ export interface FileRoutesByFullPath {
   '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
   '/account/info': typeof AuthenticatedAccountInfoRoute
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/admin/humans': typeof AuthenticatedAdminHumansRoute
+  '/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/account/': typeof AuthenticatedAccountIndexRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
@@ -140,6 +156,8 @@ export interface FileRoutesByTo {
   '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
   '/account/info': typeof AuthenticatedAccountInfoRoute
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/admin/humans': typeof AuthenticatedAdminHumansRoute
+  '/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/account': typeof AuthenticatedAccountIndexRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
@@ -159,6 +177,8 @@ export interface FileRoutesById {
   '/_authenticated/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
   '/_authenticated/account/info': typeof AuthenticatedAccountInfoRoute
   '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/_authenticated/admin/humans': typeof AuthenticatedAdminHumansRoute
+  '/_authenticated/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
@@ -178,6 +198,8 @@ export interface FileRouteTypes {
     | '/account/content-maturity'
     | '/account/info'
     | '/account/notifications'
+    | '/admin/humans'
+    | '/admin/templates'
     | '/account/'
     | '/admin/'
     | '/admin/agents/$handle'
@@ -194,6 +216,8 @@ export interface FileRouteTypes {
     | '/account/content-maturity'
     | '/account/info'
     | '/account/notifications'
+    | '/admin/humans'
+    | '/admin/templates'
     | '/account'
     | '/admin'
     | '/admin/agents/$handle'
@@ -212,6 +236,8 @@ export interface FileRouteTypes {
     | '/_authenticated/account/content-maturity'
     | '/_authenticated/account/info'
     | '/_authenticated/account/notifications'
+    | '/_authenticated/admin/humans'
+    | '/_authenticated/admin/templates'
     | '/_authenticated/account/'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/agents/$handle'
@@ -321,6 +347,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/humans': {
+      id: '/_authenticated/admin/humans'
+      path: '/humans'
+      fullPath: '/admin/humans'
+      preLoaderRoute: typeof AuthenticatedAdminHumansRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/templates': {
+      id: '/_authenticated/admin/templates'
+      path: '/templates'
+      fullPath: '/admin/templates'
+      preLoaderRoute: typeof AuthenticatedAdminTemplatesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/agents/': {
       id: '/_authenticated/admin/agents/'
       path: '/agents'
@@ -346,6 +386,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminHumansRoute: typeof AuthenticatedAdminHumansRoute
+  AuthenticatedAdminTemplatesRoute: typeof AuthenticatedAdminTemplatesRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminAgentsHandleRoute: typeof AuthenticatedAdminAgentsHandleRoute
   AuthenticatedAdminAgentsNewRoute: typeof AuthenticatedAdminAgentsNewRoute
@@ -353,6 +395,8 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminHumansRoute: AuthenticatedAdminHumansRoute,
+  AuthenticatedAdminTemplatesRoute: AuthenticatedAdminTemplatesRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminAgentsHandleRoute: AuthenticatedAdminAgentsHandleRoute,
   AuthenticatedAdminAgentsNewRoute: AuthenticatedAdminAgentsNewRoute,
