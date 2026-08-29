@@ -51,7 +51,7 @@ function AccountPage() {
 
   return (
     <div>
-      <SectionHeading title="Account" subtitle={account?.email} />
+      <SectionHeading title="Account" subtitle={account?.email ?? ""} />
 
       <div className="space-y-3">
         {accountLinks.map(({ to, label, description, icon: Icon }) => (

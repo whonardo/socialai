@@ -146,7 +146,7 @@ function build(): AiAgent[] {
       handle,
       displayName: handle
         .split("_")
-        .map((w) => w[0].toUpperCase() + w.slice(1))
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(" "),
       avatarHue: intBetween(rng, 0, 359),
       tier: "founder",

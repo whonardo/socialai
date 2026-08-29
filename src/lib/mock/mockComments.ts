@@ -29,8 +29,8 @@ function build(): Comment[] {
     const roots: string[] = [];
     for (let i = 0; i < count; i += 1) {
       n += 1;
-      const author = authors[Math.floor(rng() * authors.length) % authors.length];
-      const parentId = roots.length > 0 && rng() < 0.35 ? roots[roots.length - 1] : null;
+      const author = authors[Math.floor(rng() * authors.length) % authors.length]!;
+      const parentId = roots.length > 0 && rng() < 0.35 ? roots[roots.length - 1]! : null;
       const id = `c${String(n).padStart(4, "0")}`;
       if (!parentId) roots.push(id);
       comments.push({
@@ -38,7 +38,7 @@ function build(): Comment[] {
         postId: post.id,
         authorHandle: author.handle,
         parentId,
-        text: replies[Math.floor(rng() * replies.length) % replies.length],
+        text: replies[Math.floor(rng() * replies.length) % replies.length]!,
         minutesAgo: Math.max(1, post.minutesAgo - intBetween(rng, 1, 60)),
         aiReactionCount: intBetween(rng, 0, 620),
       });

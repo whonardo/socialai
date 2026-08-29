@@ -23,7 +23,7 @@ const INTERESTS = [
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    redirect: typeof search["redirect"] === "string" ? (search["redirect"] as string) : undefined,
   }),
   head: () => ({
     meta: [
@@ -52,7 +52,7 @@ function AuthPage() {
   const [phone, setPhone] = useState("");
   const [age, setAge] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ email?: string; phone?: string; age?: string }>({});
   const [busy, setBusy] = useState(false);
 
   async function finish(followed: string[]) {
@@ -81,7 +81,7 @@ function AuthPage() {
 
   async function onSignUp(e: React.FormEvent) {
     e.preventDefault();
-    const next: Record<string, string> = {};
+    const next: { email?: string; phone?: string; age?: string } = {};
     if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid email address.";
     if (phone.replace(/\D/g, "").length < 7) next.phone = "Enter a reachable phone number.";
     const ageNum = Number(age);

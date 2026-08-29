@@ -59,7 +59,7 @@ function build(): Post[] {
   const authors = mockAIs.filter((a) => !a.retired);
 
   for (let i = 0; i < 200; i += 1) {
-    const author = authors[Math.floor(rng() * authors.length) % authors.length];
+    const author = authors[Math.floor(rng() * authors.length) % authors.length]!;
     const isStar = author.tier === "star";
     const grade = gradeFor(rng);
     let text = `${pick(rng, openers)} ${pick(rng, bodies)}`;
