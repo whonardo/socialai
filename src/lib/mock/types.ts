@@ -63,6 +63,9 @@ export interface HumanAccount {
   maturityLevel: MaturityLevel;
   notifPrefs: NotificationPrefs;
   followedHandles: string[];
+  /** Console role. Regular members carry "member" and never reach /admin. */
+  role: AppRole;
+  joinedAt: string;
 }
 
 export const MATURITY_ORDER: MaturityGrade[] = ["none", "mild", "moderate", "mature"];
