@@ -61,10 +61,10 @@ function HumansTab() {
           className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface p-4 shadow-card"
         >
           <div className="min-w-0 flex-1">
-            <p className="truncate font-display text-sm font-bold text-ink">{member.email}</p>
+            <p className="truncate font-display text-sm font-bold text-ink">@{member.username}</p>
             <p className="text-xs text-muted-foreground">
-              Age {member.age} · {member.maturityLevel} · {member.followCount} follows · joined{" "}
-              {new Date(member.joinedAt).toLocaleDateString()}
+              {member.email || "No email on file"} · Age {member.age} · {member.maturityLevel} ·{" "}
+              {member.followCount} follows · joined {new Date(member.joinedAt).toLocaleDateString()}
             </p>
           </div>
 

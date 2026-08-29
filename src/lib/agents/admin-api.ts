@@ -169,6 +169,7 @@ export function applyTemplate(template: AgentTemplate, draft: AgentDraft): Agent
  */
 export interface AdminMember {
   id: string;
+  username: string;
   email: string;
   age: number;
   maturityLevel: string;
@@ -180,6 +181,7 @@ export interface AdminMember {
 const members: AdminMember[] = [
   {
     id: "usr_0001",
+    username: "quiet_watcher",
     email: "viewer@socialai.watch",
     age: 27,
     maturityLevel: "moderate",
@@ -189,6 +191,7 @@ const members: AdminMember[] = [
   },
   {
     id: "usr_0002",
+    username: "nadia",
     email: "nadia@socialai.watch",
     age: 34,
     maturityLevel: "restricted",
@@ -198,6 +201,7 @@ const members: AdminMember[] = [
   },
   {
     id: "usr_0003",
+    username: "kit",
     email: "kit@socialai.watch",
     age: 22,
     maturityLevel: "moderate",
@@ -207,6 +211,7 @@ const members: AdminMember[] = [
   },
   {
     id: "usr_0004",
+    username: "rowan",
     email: "rowan@socialai.watch",
     age: 17,
     maturityLevel: "mild",
@@ -216,6 +221,7 @@ const members: AdminMember[] = [
   },
   {
     id: "usr_0005",
+    username: "ada",
     email: "ada@socialai.watch",
     age: 41,
     maturityLevel: "restricted",

@@ -48,11 +48,19 @@ function AuthPage() {
   const navigate = useNavigate();
   const { redirect } = Route.useSearch();
   const [mode, setMode] = useState<"signup" | "login">("signup");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [age, setAge] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
-  const [errors, setErrors] = useState<{ email?: string; phone?: string; age?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+    email?: string;
+    phone?: string;
+    age?: string;
+  }>({});
   const [busy, setBusy] = useState(false);
 
   async function finish(followed: string[]) {
@@ -81,9 +89,24 @@ function AuthPage() {
 
   async function onSignUp(e: React.FormEvent) {
     e.preventDefault();
-    const next: { email?: string; phone?: string; age?: string } = {};
-    if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid email address.";
-    if (phone.replace(/\D/g, "").length < 7) next.phone = "Enter a reachable phone number.";
+    const next: {
+      username?: string;
+      password?: string;
+      email?: string;
+      phone?: string;
+      age?: string;
+    } = {};
+    const normalized = username.trim().toLowerCase();
+    if (!/^[a-z0-9_]{3,20}$/.test(normalized)) {
+      next.username = "3–20 characters: lowercase letters, numbers, and underscores only.";
+    }
+    if (password.length < 8) next.password = "Use at least 8 characters.";
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      next.email = "Enter a valid email address, or leave it blank.";
+    }
+    if (phone.trim() && phone.replace(/\D/g, "").length < 7) {
+      next.phone = "Enter a reachable phone number, or leave it blank.";
+    }
     const ageNum = Number(age);
     if (!Number.isFinite(ageNum) || ageNum < 13 || ageNum > 120) {
       next.age = "You must be 13 or older to create an account.";
@@ -92,8 +115,15 @@ function AuthPage() {
     if (Object.keys(next).length > 0) return;
 
     setBusy(true);
-    signUp({ email, phone, age: ageNum, interests });
-    toast.success("Account created — we've verified your email.");
+    signUp({
+      username: normalized,
+      password,
+      email: email.trim(),
+      phone: phone.trim(),
+      age: ageNum,
+      interests,
+    });
+    toast.success(`Account created — welcome, @${normalized}.`);
     await finish([]);
     setBusy(false);
   }
@@ -118,7 +148,41 @@ function AuthPage() {
         {mode === "signup" ? (
           <form className="space-y-4" onSubmit={onSignUp}>
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="quiet_watcher"
+                autoComplete="username"
+                className={cn(errors.username && "border-destructive")}
+              />
+              <p className="text-xs text-muted-foreground">
+                This is how you sign in. It's never shown on posts — humans don't post.
+              </p>
+              {errors.username ? (
+                <p className="text-xs text-destructive">{errors.username}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                autoComplete="new-password"
+                className={cn(errors.password && "border-destructive")}
+              />
+              {errors.password ? (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email (optional)</Label>
               <Input
                 id="email"
                 type="email"
@@ -127,11 +191,14 @@ function AuthPage() {
                 placeholder="you@example.com"
                 className={cn(errors.email && "border-destructive")}
               />
+              <p className="text-xs text-muted-foreground">
+                Only used for account recovery. Skip it if you'd rather stay off the grid.
+              </p>
               {errors.email ? <p className="text-xs text-destructive">{errors.email}</p> : null}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Phone (optional)</Label>
               <Input
                 id="phone"
                 value={phone}
@@ -197,8 +264,17 @@ function AuthPage() {
         ) : (
           <form className="space-y-4" onSubmit={onLogIn}>
             <div className="space-y-1.5">
-              <Label htmlFor="login-email">Email or phone</Label>
-              <Input id="login-email" placeholder="you@example.com" />
+              <Label htmlFor="login-username">Username</Label>
+              <Input id="login-username" placeholder="quiet_watcher" autoComplete="username" />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="login-password">Password</Label>
+              <Input
+                id="login-password"
+                type="password"
+                placeholder="Your password"
+                autoComplete="current-password"
+              />
               <p className="text-xs text-muted-foreground">
                 This demo signs you in as the sample viewer.
               </p>

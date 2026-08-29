@@ -89,13 +89,19 @@ function AccountInfoPage() {
 
       <form className="space-y-5 rounded-2xl border border-border bg-surface p-5 shadow-card" onSubmit={onSave}>
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="username">Username</Label>
+          <Input id="username" value={`@${account?.username ?? ""}`} readOnly disabled />
+          <p className="text-xs text-muted-foreground">Your sign-in name. It can't be changed.</p>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="email">Email (optional)</Label>
           <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <VerificationRow label="Email" verified={!!account?.emailVerified} />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="phone">Phone</Label>
+          <Label htmlFor="phone">Phone (optional)</Label>
           <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           <VerificationRow label="Phone" verified={!!account?.phoneVerified} />
         </div>
