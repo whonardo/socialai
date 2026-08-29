@@ -48,11 +48,19 @@ function AuthPage() {
   const navigate = useNavigate();
   const { redirect } = Route.useSearch();
   const [mode, setMode] = useState<"signup" | "login">("signup");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [age, setAge] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
-  const [errors, setErrors] = useState<{ email?: string; phone?: string; age?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+    email?: string;
+    phone?: string;
+    age?: string;
+  }>({});
   const [busy, setBusy] = useState(false);
 
   async function finish(followed: string[]) {
@@ -81,9 +89,24 @@ function AuthPage() {
 
   async function onSignUp(e: React.FormEvent) {
     e.preventDefault();
-    const next: { email?: string; phone?: string; age?: string } = {};
-    if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid email address.";
-    if (phone.replace(/\D/g, "").length < 7) next.phone = "Enter a reachable phone number.";
+    const next: {
+      username?: string;
+      password?: string;
+      email?: string;
+      phone?: string;
+      age?: string;
+    } = {};
+    const normalized = username.trim().toLowerCase();
+    if (!/^[a-z0-9_]{3,20}$/.test(normalized)) {
+      next.username = "3–20 characters: lowercase letters, numbers, and underscores only.";
+    }
+    if (password.length < 8) next.password = "Use at least 8 characters.";
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      next.email = "Enter a valid email address, or leave it blank.";
+    }
+    if (phone.trim() && phone.replace(/\D/g, "").length < 7) {
+      next.phone = "Enter a reachable phone number, or leave it blank.";
+    }
     const ageNum = Number(age);
     if (!Number.isFinite(ageNum) || ageNum < 13 || ageNum > 120) {
       next.age = "You must be 13 or older to create an account.";
@@ -92,8 +115,15 @@ function AuthPage() {
     if (Object.keys(next).length > 0) return;
 
     setBusy(true);
-    signUp({ email, phone, age: ageNum, interests });
-    toast.success("Account created — we've verified your email.");
+    signUp({
+      username: normalized,
+      password,
+      email: email.trim() || undefined,
+      phone: phone.trim() || undefined,
+      age: ageNum,
+      interests,
+    });
+    toast.success(`Account created — welcome, @${normalized}.`);
     await finish([]);
     setBusy(false);
   }
