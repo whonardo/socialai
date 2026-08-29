@@ -23,6 +23,8 @@ import { Route as AuthenticatedAccountInfoRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated.account.notifications'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
 import { Route as AuthenticatedAdminAgentsIndexRouteImport } from './routes/_authenticated.admin.agents.index'
+import { Route as AuthenticatedAdminAgentsHandleRouteImport } from './routes/_authenticated.admin.agents.$handle'
+import { Route as AuthenticatedAdminAgentsNewRouteImport } from './routes/_authenticated.admin.agents.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -98,6 +100,18 @@ const AuthenticatedAdminAgentsIndexRoute =
     path: '/agents/',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAgentsHandleRoute =
+  AuthenticatedAdminAgentsHandleRouteImport.update({
+    id: '/agents/$handle',
+    path: '/agents/$handle',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAgentsNewRoute =
+  AuthenticatedAdminAgentsNewRouteImport.update({
+    id: '/agents/new',
+    path: '/agents/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -112,6 +126,8 @@ export interface FileRoutesByFullPath {
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/account/': typeof AuthenticatedAccountIndexRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
+  '/admin/agents/new': typeof AuthenticatedAdminAgentsNewRoute
   '/admin/agents/': typeof AuthenticatedAdminAgentsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -126,6 +142,8 @@ export interface FileRoutesByTo {
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/account': typeof AuthenticatedAccountIndexRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
+  '/admin/agents/new': typeof AuthenticatedAdminAgentsNewRoute
   '/admin/agents': typeof AuthenticatedAdminAgentsIndexRoute
 }
 export interface FileRoutesById {
@@ -143,6 +161,8 @@ export interface FileRoutesById {
   '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
+  '/_authenticated/admin/agents/new': typeof AuthenticatedAdminAgentsNewRoute
   '/_authenticated/admin/agents/': typeof AuthenticatedAdminAgentsIndexRoute
 }
 export interface FileRouteTypes {
@@ -160,6 +180,8 @@ export interface FileRouteTypes {
     | '/account/notifications'
     | '/account/'
     | '/admin/'
+    | '/admin/agents/$handle'
+    | '/admin/agents/new'
     | '/admin/agents/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -174,6 +196,8 @@ export interface FileRouteTypes {
     | '/account/notifications'
     | '/account'
     | '/admin'
+    | '/admin/agents/$handle'
+    | '/admin/agents/new'
     | '/admin/agents'
   id:
     | '__root__'
@@ -190,6 +214,8 @@ export interface FileRouteTypes {
     | '/_authenticated/account/notifications'
     | '/_authenticated/account/'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/agents/$handle'
+    | '/_authenticated/admin/agents/new'
     | '/_authenticated/admin/agents/'
   fileRoutesById: FileRoutesById
 }
@@ -302,16 +328,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAgentsIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/agents/$handle': {
+      id: '/_authenticated/admin/agents/$handle'
+      path: '/agents/$handle'
+      fullPath: '/admin/agents/$handle'
+      preLoaderRoute: typeof AuthenticatedAdminAgentsHandleRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/agents/new': {
+      id: '/_authenticated/admin/agents/new'
+      path: '/agents/new'
+      fullPath: '/admin/agents/new'
+      preLoaderRoute: typeof AuthenticatedAdminAgentsNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminAgentsHandleRoute: typeof AuthenticatedAdminAgentsHandleRoute
+  AuthenticatedAdminAgentsNewRoute: typeof AuthenticatedAdminAgentsNewRoute
   AuthenticatedAdminAgentsIndexRoute: typeof AuthenticatedAdminAgentsIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminAgentsHandleRoute: AuthenticatedAdminAgentsHandleRoute,
+  AuthenticatedAdminAgentsNewRoute: AuthenticatedAdminAgentsNewRoute,
   AuthenticatedAdminAgentsIndexRoute: AuthenticatedAdminAgentsIndexRoute,
 }
 
