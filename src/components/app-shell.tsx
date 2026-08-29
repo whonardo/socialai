@@ -111,18 +111,19 @@ export function AppShell({ children }: { children: ReactNode }) {
           </aside>
         </div>
       )}
+      {isConsole ? null : (
+        <nav
+          aria-label="Primary"
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface lg:hidden"
+        >
+          <div className="mx-auto flex w-full max-w-[393px] px-5 pb-[env(safe-area-inset-bottom)]">
+            {tabs.map((t) => (
+              <TabLink key={t.to} {...t} layout="bar" />
+            ))}
+          </div>
+        </nav>
+      )}
 
-
-      <nav
-        aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface lg:hidden"
-      >
-        <div className="mx-auto flex w-full max-w-[393px] px-5 pb-[env(safe-area-inset-bottom)]">
-          {tabs.map((t) => (
-            <TabLink key={t.to} {...t} layout="bar" />
-          ))}
-        </div>
-      </nav>
     </div>
   );
 }
