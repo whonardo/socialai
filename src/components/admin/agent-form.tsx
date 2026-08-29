@@ -129,6 +129,8 @@ export function AgentForm({
           onSubmit();
         }}
       >
+        {headerSlot}
+
         <Section step={1} title="Identity" description="Who this agent is in the feed.">
           <Field name="displayName">
             <Label htmlFor="displayName">Display name</Label>
@@ -141,7 +143,7 @@ export function AgentForm({
             {errorFor("displayName") ? (
               <p className="text-xs text-destructive">{errorFor("displayName")}</p>
             ) : null}
-          </div>
+          </Field>
 
           <Field name="handle">
             <Label htmlFor="handle">Handle</Label>
@@ -162,7 +164,7 @@ export function AgentForm({
             {errorFor("handle") ? (
               <p className="text-xs text-destructive">{errorFor("handle")}</p>
             ) : null}
-          </div>
+          </Field>
 
           <Field name="avatarHue">
             <Label htmlFor="avatarHue">Avatar hue</Label>
@@ -175,7 +177,7 @@ export function AgentForm({
               onChange={(e) => set("avatarHue", Number(e.target.value))}
               className="w-full accent-[var(--accent)]"
             />
-          </div>
+          </Field>
 
           <div className="space-y-1.5">
             <Label>Tier</Label>
@@ -217,6 +219,7 @@ export function AgentForm({
           title="Persona bio"
           description="The one-paragraph blurb on the agent's profile."
         >
+          <div className={cn("rounded-md", flashed("personaBio") && "field-flash")}>
           <Textarea
             aria-label="Persona bio"
             value={draft.personaBio}
@@ -225,6 +228,7 @@ export function AgentForm({
             placeholder="Broadcasts static and calls it prophecy."
           />
           <p className="text-xs text-muted-foreground">{draft.personaBio.length}/280</p>
+          </div>
           {errorFor("personaBio") ? (
             <p className="text-xs text-destructive">{errorFor("personaBio")}</p>
           ) : null}
@@ -267,14 +271,16 @@ export function AgentForm({
             {errorFor("essence") ? (
               <p className="text-xs text-destructive">{errorFor("essence")}</p>
             ) : null}
-          </div>
+          </Field>
 
+          <div className={cn("rounded-md", flashed("coreTraits") && "field-flash")}>
           <ChipSelect
             label="Core traits"
             options={SUGGESTED_TRAITS}
             value={draft.coreTraits}
             onChange={(next) => set("coreTraits", next.slice(0, 8))}
           />
+          </div>
 
           <Field name="backstory">
             <Label htmlFor="backstory">Backstory</Label>
@@ -283,7 +289,7 @@ export function AgentForm({
               value={draft.backstory}
               onChange={(e) => set("backstory", e.target.value)}
             />
-          </div>
+          </Field>
 
           <Field name="motivations">
             <Label htmlFor="motivations">Motivations</Label>
@@ -292,7 +298,7 @@ export function AgentForm({
               value={draft.motivations}
               onChange={(e) => set("motivations", e.target.value)}
             />
-          </div>
+          </Field>
         </Section>
 
         <Section step={4} title="Voice & tone" description="How the agent actually sounds.">
@@ -313,7 +319,7 @@ export function AgentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
 
           <TagInput
             label="Signature phrases"
@@ -339,7 +345,7 @@ export function AgentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
 
           <TagInput
             label="Never says"
@@ -362,7 +368,7 @@ export function AgentForm({
             {errorFor("niche") ? (
               <p className="text-xs text-destructive">{errorFor("niche")}</p>
             ) : null}
-          </div>
+          </Field>
           <TagInput
             label="Secondary topics"
             value={draft.secondaryTopics}
@@ -388,7 +394,7 @@ export function AgentForm({
           title="Behaviour dials"
           description="Six dials, 1 to 10. Five is the neutral middle."
         >
-          <div className="divide-y divide-border">
+          <div className={cn("divide-y divide-border rounded-md", flashed("dials") && "field-flash")}>
             {DIAL_LIST.map((spec) => (
               <DialSlider
                 key={spec.key}
@@ -404,7 +410,9 @@ export function AgentForm({
         </Section>
 
         <Section step={7} title="Example posts" description="The agent's voice, on the record.">
+          <div className={cn("rounded-md", flashed("examplePosts") && "field-flash")}>
           <ExamplePostEditor draft={draft} onChange={(next) => set("examplePosts", next)} />
+          </div>
           {errorFor("examplePosts") ? (
             <p className="text-xs text-destructive">{errorFor("examplePosts")}</p>
           ) : null}
@@ -439,7 +447,7 @@ export function AgentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
           <Field name="boundaries">
             <Label htmlFor="boundaries">Boundaries</Label>
             <Textarea
@@ -448,7 +456,7 @@ export function AgentForm({
               onChange={(e) => set("boundaries", e.target.value)}
               placeholder="Never targets real people. No medical advice."
             />
-          </div>
+          </Field>
         </Section>
 
         {showErrors && errors.length ? (
