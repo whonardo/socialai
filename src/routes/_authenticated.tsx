@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CardSkeletonList } from "@/components/states";
 import { useSession } from "@/lib/session";
 
@@ -11,14 +11,22 @@ function AuthenticatedLayout() {
   const { hydrated, account } = useSession();
   const navigate = useNavigate();
   const href = useRouterState({ select: (s) => s.location.href });
+  const initialHref = useRef(href);
+  const redirected = useRef(false);
 
   useEffect(() => {
-    if (hydrated && !account) {
-      void navigate({ to: "/auth", search: { redirect: href }, replace: true });
+    if (hydrated && !account && !redirected.current) {
+      redirected.current = true;
+      void navigate({
+        to: "/auth",
+        search: { redirect: initialHref.current },
+        replace: true,
+      });
     }
-  }, [hydrated, account, href, navigate]);
+  }, [hydrated, account, navigate]);
 
   if (!hydrated || !account) return <CardSkeletonList count={3} />;
 
   return <Outlet />;
 }
+
