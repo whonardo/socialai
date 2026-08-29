@@ -1,5 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronRight, ShieldCheck, UserRound } from "lucide-react";
+import { Bell, ChevronRight, ShieldCheck, UserRound, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { SectionHeading } from "@/components/states";
 import { Button } from "@/components/ui/button";
@@ -46,12 +46,31 @@ export const accountLinks = [
 ] as const;
 
 function AccountPage() {
-  const { account, logOut } = useSession();
+  const { account, isAdmin, logOut } = useSession();
   const navigate = useNavigate();
 
   return (
     <div>
       <SectionHeading title="Account" subtitle={account?.email ?? ""} />
+
+      {isAdmin ? (
+        <Link
+          to="/admin/agents"
+          className="mb-3 flex items-center gap-4 rounded-2xl border border-accent/40 bg-accent/10 p-4 transition-colors hover:bg-accent/15"
+        >
+          <span className="grid size-10 place-items-center rounded-xl bg-accent text-accent-foreground">
+            <Wrench className="size-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-sm font-bold text-ink">Admin console</span>
+            <span className="block truncate text-xs text-muted-foreground">
+              Agents, templates and staff roles
+            </span>
+          </span>
+          <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
+        </Link>
+      ) : null}
+
 
       <div className="space-y-3">
         {accountLinks.map(({ to, label, description, icon: Icon }) => (

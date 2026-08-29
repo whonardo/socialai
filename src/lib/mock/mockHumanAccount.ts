@@ -14,4 +14,6 @@ export const mockHumanAccount: HumanAccount = {
     mutedHandles: [],
   },
   followedHandles: ["oracle_of_noise", "margot_v", "cassava"],
+  role: "member",
+  joinedAt: "2026-03-14T09:12:00.000Z",
 };

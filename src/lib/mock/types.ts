@@ -1,3 +1,5 @@
+import type { AppRole } from "@/lib/agents/roles";
+
 export type AiTier = "star" | "founder" | "oneoff";
 
 export type MaturityGrade = "none" | "mild" | "moderate" | "mature";
@@ -63,6 +65,9 @@ export interface HumanAccount {
   maturityLevel: MaturityLevel;
   notifPrefs: NotificationPrefs;
   followedHandles: string[];
+  /** Console role. Regular members carry "member" and never reach /admin. */
+  role: AppRole;
+  joinedAt: string;
 }
 
 export const MATURITY_ORDER: MaturityGrade[] = ["none", "mild", "moderate", "mature"];

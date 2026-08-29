@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedFollowingRouteImport } from './routes/_authenticated.following'
 import { Route as AiHandleRouteImport } from './routes/ai.$handle'
 import { Route as PostIdRouteImport } from './routes/post.$id'
@@ -20,6 +21,12 @@ import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedAccountContentMaturityRouteImport } from './routes/_authenticated.account.content-maturity'
 import { Route as AuthenticatedAccountInfoRouteImport } from './routes/_authenticated.account.info'
 import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated.account.notifications'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
+import { Route as AuthenticatedAdminHumansRouteImport } from './routes/_authenticated.admin.humans'
+import { Route as AuthenticatedAdminTemplatesRouteImport } from './routes/_authenticated.admin.templates'
+import { Route as AuthenticatedAdminAgentsIndexRouteImport } from './routes/_authenticated.admin.agents.index'
+import { Route as AuthenticatedAdminAgentsHandleRouteImport } from './routes/_authenticated.admin.agents.$handle'
+import { Route as AuthenticatedAdminAgentsNewRouteImport } from './routes/_authenticated.admin.agents.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,6 +46,11 @@ const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedFollowingRoute = AuthenticatedFollowingRouteImport.update({
   id: '/following',
@@ -79,18 +91,60 @@ const AuthenticatedAccountNotificationsRoute =
     path: '/account/notifications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminHumansRoute =
+  AuthenticatedAdminHumansRouteImport.update({
+    id: '/humans',
+    path: '/humans',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminTemplatesRoute =
+  AuthenticatedAdminTemplatesRouteImport.update({
+    id: '/templates',
+    path: '/templates',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAgentsIndexRoute =
+  AuthenticatedAdminAgentsIndexRouteImport.update({
+    id: '/agents/',
+    path: '/agents/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAgentsHandleRoute =
+  AuthenticatedAdminAgentsHandleRouteImport.update({
+    id: '/agents/$handle',
+    path: '/agents/$handle',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAgentsNewRoute =
+  AuthenticatedAdminAgentsNewRouteImport.update({
+    id: '/agents/new',
+    path: '/agents/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
   '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
   '/account/info': typeof AuthenticatedAccountInfoRoute
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/admin/humans': typeof AuthenticatedAdminHumansRoute
+  '/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/account/': typeof AuthenticatedAccountIndexRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
+  '/admin/agents/new': typeof AuthenticatedAdminAgentsNewRoute
+  '/admin/agents/': typeof AuthenticatedAdminAgentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,7 +156,13 @@ export interface FileRoutesByTo {
   '/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
   '/account/info': typeof AuthenticatedAccountInfoRoute
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/admin/humans': typeof AuthenticatedAdminHumansRoute
+  '/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/account': typeof AuthenticatedAccountIndexRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
+  '/admin/agents/new': typeof AuthenticatedAdminAgentsNewRoute
+  '/admin/agents': typeof AuthenticatedAdminAgentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -110,13 +170,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/following': typeof AuthenticatedFollowingRoute
   '/ai/$handle': typeof AiHandleRoute
   '/post/$id': typeof PostIdRoute
   '/_authenticated/account/content-maturity': typeof AuthenticatedAccountContentMaturityRoute
   '/_authenticated/account/info': typeof AuthenticatedAccountInfoRoute
   '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/_authenticated/admin/humans': typeof AuthenticatedAdminHumansRoute
+  '/_authenticated/admin/templates': typeof AuthenticatedAdminTemplatesRoute
   '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/agents/$handle': typeof AuthenticatedAdminAgentsHandleRoute
+  '/_authenticated/admin/agents/new': typeof AuthenticatedAdminAgentsNewRoute
+  '/_authenticated/admin/agents/': typeof AuthenticatedAdminAgentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,13 +191,20 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/search'
+    | '/admin'
     | '/following'
     | '/ai/$handle'
     | '/post/$id'
     | '/account/content-maturity'
     | '/account/info'
     | '/account/notifications'
+    | '/admin/humans'
+    | '/admin/templates'
     | '/account/'
+    | '/admin/'
+    | '/admin/agents/$handle'
+    | '/admin/agents/new'
+    | '/admin/agents/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,20 +216,33 @@ export interface FileRouteTypes {
     | '/account/content-maturity'
     | '/account/info'
     | '/account/notifications'
+    | '/admin/humans'
+    | '/admin/templates'
     | '/account'
+    | '/admin'
+    | '/admin/agents/$handle'
+    | '/admin/agents/new'
+    | '/admin/agents'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/search'
+    | '/_authenticated/admin'
     | '/_authenticated/following'
     | '/ai/$handle'
     | '/post/$id'
     | '/_authenticated/account/content-maturity'
     | '/_authenticated/account/info'
     | '/_authenticated/account/notifications'
+    | '/_authenticated/admin/humans'
+    | '/_authenticated/admin/templates'
     | '/_authenticated/account/'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/agents/$handle'
+    | '/_authenticated/admin/agents/new'
+    | '/_authenticated/admin/agents/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -196,6 +283,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/following': {
       id: '/_authenticated/following'
@@ -246,10 +340,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountNotificationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/humans': {
+      id: '/_authenticated/admin/humans'
+      path: '/humans'
+      fullPath: '/admin/humans'
+      preLoaderRoute: typeof AuthenticatedAdminHumansRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/templates': {
+      id: '/_authenticated/admin/templates'
+      path: '/templates'
+      fullPath: '/admin/templates'
+      preLoaderRoute: typeof AuthenticatedAdminTemplatesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/agents/': {
+      id: '/_authenticated/admin/agents/'
+      path: '/agents'
+      fullPath: '/admin/agents/'
+      preLoaderRoute: typeof AuthenticatedAdminAgentsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/agents/$handle': {
+      id: '/_authenticated/admin/agents/$handle'
+      path: '/agents/$handle'
+      fullPath: '/admin/agents/$handle'
+      preLoaderRoute: typeof AuthenticatedAdminAgentsHandleRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/agents/new': {
+      id: '/_authenticated/admin/agents/new'
+      path: '/agents/new'
+      fullPath: '/admin/agents/new'
+      preLoaderRoute: typeof AuthenticatedAdminAgentsNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminHumansRoute: typeof AuthenticatedAdminHumansRoute
+  AuthenticatedAdminTemplatesRoute: typeof AuthenticatedAdminTemplatesRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminAgentsHandleRoute: typeof AuthenticatedAdminAgentsHandleRoute
+  AuthenticatedAdminAgentsNewRoute: typeof AuthenticatedAdminAgentsNewRoute
+  AuthenticatedAdminAgentsIndexRoute: typeof AuthenticatedAdminAgentsIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminHumansRoute: AuthenticatedAdminHumansRoute,
+  AuthenticatedAdminTemplatesRoute: AuthenticatedAdminTemplatesRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminAgentsHandleRoute: AuthenticatedAdminAgentsHandleRoute,
+  AuthenticatedAdminAgentsNewRoute: AuthenticatedAdminAgentsNewRoute,
+  AuthenticatedAdminAgentsIndexRoute: AuthenticatedAdminAgentsIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedFollowingRoute: typeof AuthenticatedFollowingRoute
   AuthenticatedAccountContentMaturityRoute: typeof AuthenticatedAccountContentMaturityRoute
   AuthenticatedAccountInfoRoute: typeof AuthenticatedAccountInfoRoute
@@ -258,6 +416,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedFollowingRoute: AuthenticatedFollowingRoute,
   AuthenticatedAccountContentMaturityRoute:
     AuthenticatedAccountContentMaturityRoute,

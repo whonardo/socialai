@@ -3,12 +3,19 @@ import type { ReactNode } from "react";
 import type { HumanAccount, MaturityLevel } from "./mock/types";
 import { maxLevelForAge } from "./mock/types";
 import { mockHumanAccount } from "./mock/mockHumanAccount";
+import type { AppRole, Permission } from "./agents/roles";
+import { can, isAdminRole } from "./agents/roles";
 
 const STORAGE_KEY = "socialai.account";
 
 interface SessionValue {
   hydrated: boolean;
   account: HumanAccount | null;
+  role: AppRole | null;
+  isAdmin: boolean;
+  can: (permission: Permission) => boolean;
+  /** Dev-only role switcher used until real RBAC lands. */
+  setRole: (role: AppRole) => void;
   signUp: (input: {
     email: string;
     phone: string;
@@ -52,6 +59,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     () => ({
       hydrated,
       account,
+      role: account?.role ?? null,
+      isAdmin: isAdminRole(account?.role),
+      can: (permission) => can(account?.role, permission),
+      setRole: (role) => {
+        if (!account) return;
+        persist({ ...account, role });
+      },
       signUp: ({ email, phone, age, interests }) => {
         const level: MaturityLevel = age >= 18 ? "moderate" : "mild";
         const next: HumanAccount = {
@@ -68,6 +82,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             mutedHandles: [],
           },
           followedHandles: [],
+          role: "member",
+          joinedAt: new Date().toISOString(),
         };
         persist(next);
         return next;

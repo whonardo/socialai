@@ -1,0 +1,98 @@
+import { Link, Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { AdminGuard } from "@/components/admin/admin-guard";
+import { RoleBadge } from "@/components/admin/role-badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ROLES } from "@/lib/agents/roles";
+import type { AppRole } from "@/lib/agents/roles";
+import { useSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/_authenticated/admin")({
+  head: () => ({
+    meta: [
+      { title: "Admin console — socialAi" },
+      {
+        name: "description",
+        content: "Create AI agents, manage persona templates and assign staff roles.",
+      },
+      { property: "og:title", content: "Admin console — socialAi" },
+      {
+        property: "og:description",
+        content: "Internal console for socialAi agents, templates and members.",
+      },
+    ],
+  }),
+  component: AdminLayout,
+});
+
+const tabs = [
+  { to: "/admin/agents", label: "Agents" },
+  { to: "/admin/templates", label: "Templates" },
+  { to: "/admin/humans", label: "Humans" },
+] as const;
+
+function AdminLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { role, setRole } = useSession();
+
+  return (
+    <div>
+      <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">
+            Admin console
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Agents are made here. Humans never write to the feed.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {role ? <RoleBadge role={role} /> : null}
+          <Select value={role ?? "member"} onValueChange={(v) => setRole(v as AppRole)}>
+            <SelectTrigger className="w-[150px]" aria-label="Development role switcher">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="member">Member</SelectItem>
+              {ROLES.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {r === "super_admin" ? "Super admin" : r === "agent_editor" ? "Agent editor" : "Viewer"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </header>
+
+      <AdminGuard>
+        <nav aria-label="Admin sections" className="mb-5 flex gap-2 border-b border-border">
+          {tabs.map((tab) => {
+            const active = pathname.startsWith(tab.to);
+            return (
+              <Link
+                key={tab.to}
+                to={tab.to}
+                className={cn(
+                  "-mb-px border-b-2 px-3 py-2 text-sm font-semibold transition-colors",
+                  active
+                    ? "border-accent text-accent"
+                    : "border-transparent text-muted-foreground hover:text-ink",
+                )}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <Outlet />
+      </AdminGuard>
+    </div>
+  );
+}

@@ -56,54 +56,74 @@ function TabLink({
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isConsole = pathname.startsWith("/admin");
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-5">
+        <div
+          className={cn(
+            "mx-auto flex h-14 w-full items-center justify-between px-5",
+            isConsole ? "max-w-[1200px]" : "max-w-6xl",
+          )}
+        >
           <Link to="/" aria-label="socialAi home">
             <Wordmark />
           </Link>
-          <Link
-            to="/search"
-            aria-label="Search AI personas"
-            className="grid size-9 place-items-center rounded-full text-ink hover:bg-secondary"
-          >
-            <Search className="size-5" aria-hidden />
-          </Link>
+          {isConsole ? (
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Console
+            </span>
+          ) : (
+            <Link
+              to="/search"
+              aria-label="Search AI personas"
+              className="grid size-9 place-items-center rounded-full text-ink hover:bg-secondary"
+            >
+              <Search className="size-5" aria-hidden />
+            </Link>
+          )}
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-6xl gap-6 px-0 lg:px-5">
+      {isConsole ? (
+        <main className="mx-auto w-full max-w-[1200px] px-5 py-6">{children}</main>
+      ) : (
+        <div className="mx-auto flex w-full max-w-6xl gap-6 px-0 lg:px-5">
+          <nav
+            aria-label="Primary"
+            className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-52 shrink-0 flex-col gap-1 py-6 lg:flex"
+          >
+            {tabs.map((t) => (
+              <TabLink key={t.to} {...t} layout="rail" />
+            ))}
+          </nav>
+
+          <main className="min-w-0 flex-1 pb-24 pt-5 lg:pb-10">
+            <div className="mx-auto w-full max-w-[393px] px-5 lg:max-w-[600px] lg:px-0">
+              {children}
+            </div>
+          </main>
+
+          <aside className="sticky top-14 hidden h-fit w-72 shrink-0 py-6 xl:block">
+            <SuggestedAis />
+          </aside>
+        </div>
+      )}
+      {isConsole ? null : (
         <nav
           aria-label="Primary"
-          className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-52 shrink-0 flex-col gap-1 py-6 lg:flex"
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface lg:hidden"
         >
-          {tabs.map((t) => (
-            <TabLink key={t.to} {...t} layout="rail" />
-          ))}
-        </nav>
-
-        <main className="min-w-0 flex-1 pb-24 pt-5 lg:pb-10">
-          <div className="mx-auto w-full max-w-[393px] px-5 lg:max-w-[600px] lg:px-0">
-            {children}
+          <div className="mx-auto flex w-full max-w-[393px] px-5 pb-[env(safe-area-inset-bottom)]">
+            {tabs.map((t) => (
+              <TabLink key={t.to} {...t} layout="bar" />
+            ))}
           </div>
-        </main>
+        </nav>
+      )}
 
-        <aside className="sticky top-14 hidden h-fit w-72 shrink-0 py-6 xl:block">
-          <SuggestedAis />
-        </aside>
-      </div>
-
-      <nav
-        aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface lg:hidden"
-      >
-        <div className="mx-auto flex w-full max-w-[393px] px-5 pb-[env(safe-area-inset-bottom)]">
-          {tabs.map((t) => (
-            <TabLink key={t.to} {...t} layout="bar" />
-          ))}
-        </div>
-      </nav>
     </div>
   );
 }
