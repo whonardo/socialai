@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ChipSelect, TagInput } from "@/components/admin/tag-input";
 import { DialSlider } from "@/components/admin/dial-slider";
@@ -79,6 +80,8 @@ export function AgentForm({
   seedStarterPosts,
   onSeedStarterPostsChange,
   onCancel,
+  flashFields,
+  headerSlot,
 }: {
   mode: "create" | "edit";
   draft: AgentDraft;
@@ -89,6 +92,10 @@ export function AgentForm({
   seedStarterPosts: boolean;
   onSeedStarterPostsChange: (next: boolean) => void;
   onCancel: () => void;
+  /** Fields just populated by paste-to-fill — briefly tinted for review. */
+  flashFields?: string[];
+  /** Rendered above section 1 (paste-to-fill box on the create screen). */
+  headerSlot?: React.ReactNode;
 }) {
   const [showErrors, setShowErrors] = useState(false);
   const errors = useMemo(() => validateAgentDraft(draft), [draft]);
@@ -98,6 +105,11 @@ export function AgentForm({
   function set<K extends keyof AgentDraft>(key: K, value: AgentDraft[K]) {
     onDraftChange({ ...draft, [key]: value });
   }
+
+  const flashed = (name: string) => (flashFields ?? []).includes(name);
+  const Field = ({ name, children }: { name: string; children: React.ReactNode }) => (
+    <div className={cn("space-y-1.5 rounded-md", flashed(name) && "field-flash")}>{children}</div>
+  );
 
   function setDial(key: DialKey, value: number) {
     onDraftChange({ ...draft, dials: { ...draft.dials, [key]: value } });
@@ -117,8 +129,10 @@ export function AgentForm({
           onSubmit();
         }}
       >
+        {headerSlot}
+
         <Section step={1} title="Identity" description="Who this agent is in the feed.">
-          <div className="space-y-1.5">
+          <Field name="displayName">
             <Label htmlFor="displayName">Display name</Label>
             <Input
               id="displayName"
@@ -129,9 +143,9 @@ export function AgentForm({
             {errorFor("displayName") ? (
               <p className="text-xs text-destructive">{errorFor("displayName")}</p>
             ) : null}
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
+          <Field name="handle">
             <Label htmlFor="handle">Handle</Label>
             <Input
               id="handle"
@@ -150,9 +164,9 @@ export function AgentForm({
             {errorFor("handle") ? (
               <p className="text-xs text-destructive">{errorFor("handle")}</p>
             ) : null}
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
+          <Field name="avatarHue">
             <Label htmlFor="avatarHue">Avatar hue</Label>
             <input
               id="avatarHue"
@@ -163,7 +177,7 @@ export function AgentForm({
               onChange={(e) => set("avatarHue", Number(e.target.value))}
               className="w-full accent-[var(--accent)]"
             />
-          </div>
+          </Field>
 
           <div className="space-y-1.5">
             <Label>Tier</Label>
@@ -205,6 +219,7 @@ export function AgentForm({
           title="Persona bio"
           description="The one-paragraph blurb on the agent's profile."
         >
+          <div className={cn("rounded-md", flashed("personaBio") && "field-flash")}>
           <Textarea
             aria-label="Persona bio"
             value={draft.personaBio}
@@ -213,6 +228,7 @@ export function AgentForm({
             placeholder="Broadcasts static and calls it prophecy."
           />
           <p className="text-xs text-muted-foreground">{draft.personaBio.length}/280</p>
+          </div>
           {errorFor("personaBio") ? (
             <p className="text-xs text-destructive">{errorFor("personaBio")}</p>
           ) : null}
@@ -244,7 +260,7 @@ export function AgentForm({
         ) : null}
 
         <Section step={3} title="Personality" description="The core of the persona.">
-          <div className="space-y-1.5">
+          <Field name="essence">
             <Label htmlFor="essence">Essence</Label>
             <Input
               id="essence"
@@ -255,36 +271,38 @@ export function AgentForm({
             {errorFor("essence") ? (
               <p className="text-xs text-destructive">{errorFor("essence")}</p>
             ) : null}
-          </div>
+          </Field>
 
+          <div className={cn("rounded-md", flashed("coreTraits") && "field-flash")}>
           <ChipSelect
             label="Core traits"
             options={SUGGESTED_TRAITS}
             value={draft.coreTraits}
             onChange={(next) => set("coreTraits", next.slice(0, 8))}
           />
+          </div>
 
-          <div className="space-y-1.5">
+          <Field name="backstory">
             <Label htmlFor="backstory">Backstory</Label>
             <Textarea
               id="backstory"
               value={draft.backstory}
               onChange={(e) => set("backstory", e.target.value)}
             />
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
+          <Field name="motivations">
             <Label htmlFor="motivations">Motivations</Label>
             <Textarea
               id="motivations"
               value={draft.motivations}
               onChange={(e) => set("motivations", e.target.value)}
             />
-          </div>
+          </Field>
         </Section>
 
         <Section step={4} title="Voice & tone" description="How the agent actually sounds.">
-          <div className="space-y-1.5">
+          <Field name="register">
             <Label htmlFor="register">Register</Label>
             <Select
               value={draft.register}
@@ -301,7 +319,7 @@ export function AgentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
 
           <TagInput
             label="Signature phrases"
@@ -310,7 +328,7 @@ export function AgentForm({
             onChange={(next) => set("signaturePhrases", next)}
           />
 
-          <div className="space-y-1.5">
+          <Field name="emojiUsage">
             <Label htmlFor="emoji">Emoji usage</Label>
             <Select
               value={draft.emojiUsage}
@@ -327,7 +345,7 @@ export function AgentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
 
           <TagInput
             label="Never says"
@@ -339,7 +357,7 @@ export function AgentForm({
         </Section>
 
         <Section step={5} title="Likes, dislikes & niche" description="What it talks about.">
-          <div className="space-y-1.5">
+          <Field name="niche">
             <Label htmlFor="niche">Primary niche</Label>
             <Input
               id="niche"
@@ -350,7 +368,7 @@ export function AgentForm({
             {errorFor("niche") ? (
               <p className="text-xs text-destructive">{errorFor("niche")}</p>
             ) : null}
-          </div>
+          </Field>
           <TagInput
             label="Secondary topics"
             value={draft.secondaryTopics}
@@ -376,7 +394,7 @@ export function AgentForm({
           title="Behaviour dials"
           description="Six dials, 1 to 10. Five is the neutral middle."
         >
-          <div className="divide-y divide-border">
+          <div className={cn("divide-y divide-border rounded-md", flashed("dials") && "field-flash")}>
             {DIAL_LIST.map((spec) => (
               <DialSlider
                 key={spec.key}
@@ -392,7 +410,9 @@ export function AgentForm({
         </Section>
 
         <Section step={7} title="Example posts" description="The agent's voice, on the record.">
+          <div className={cn("rounded-md", flashed("examplePosts") && "field-flash")}>
           <ExamplePostEditor draft={draft} onChange={(next) => set("examplePosts", next)} />
+          </div>
           {errorFor("examplePosts") ? (
             <p className="text-xs text-destructive">{errorFor("examplePosts")}</p>
           ) : null}
@@ -410,7 +430,7 @@ export function AgentForm({
         </Section>
 
         <Section step={8} title="Maturity & boundaries" description="What it is allowed to say.">
-          <div className="space-y-1.5">
+          <Field name="defaultMaturity">
             <Label htmlFor="maturity">Default maturity</Label>
             <Select
               value={draft.defaultMaturity}
@@ -427,8 +447,8 @@ export function AgentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-1.5">
+          </Field>
+          <Field name="boundaries">
             <Label htmlFor="boundaries">Boundaries</Label>
             <Textarea
               id="boundaries"
@@ -436,7 +456,7 @@ export function AgentForm({
               onChange={(e) => set("boundaries", e.target.value)}
               placeholder="Never targets real people. No medical advice."
             />
-          </div>
+          </Field>
         </Section>
 
         {showErrors && errors.length ? (
