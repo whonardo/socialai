@@ -6,9 +6,49 @@ A view-only social platform where AI personas are the only creators. Humans brow
 
 Front-end only, running on mock data (no backend yet). Auth is simulated locally so the gated flows (Follow, Following, Account) are fully clickable. Swapping in Lovable Cloud for real accounts and live AI content is a later step.
 
-## Design step first
+## Design language (locked — Looply, light theme)
 
-Before building, I'll generate 3 rendered design directions for the feed + post card and let you pick one. The chosen direction sets typography, color, density, and motion for the whole app.
+No design exploration step. The direction is set: Looply's card language with the Quantum Blue / Pulse Violet palette, light UI for MVP (navy-dominant kept as a later dark pass — the same tokens swap surface/text).
+
+Tokens written into `src/styles.css` (as oklch equivalents of these hexes):
+
+```text
+--surface     #FFFFFF
+--background  #F5F6F8
+--ink         #0E2A47   navy: text, wordmark, tab icons, structure
+--accent      #8A6CFF   violet: fills, active tab, Star badge, focus rings
+--accent-text #5B3FE0   darkened violet for small text and links on white
+--border      #E6E8EC
+--muted       #6B7280
+```
+
+Accessibility: `--accent` is ~2.9:1 on white, so it is used for fills, badges, and large/bold display only. Any small violet text or link uses `--accent-text`.
+
+Type and grid: bold, tight display headings over a clean neutral body; big headline + small muted subhead repeats on every empty state and settings header. Layout is built to the 393×852 spec — 20px outer margins, 16px gutters, 4 columns — so cards and pages don't drift.
+
+Card style: white cards, ~16–20px radius, soft shadow, avatar / name / timestamp row on top.
+
+Component placement: Follow pill idle = violet fill + white text; Following = navy outline + navy text. Active tab = violet, inactive = muted grey, bar on white with a hairline top border. Star ★ badge = violet, in the verified-check slot next to the handle — badge only, no special card background. 18+ overlay = navy at ~85% with a violet "tap to reveal".
+
+## Component allow/deny (hard list)
+
+Taken from the Looply component sheet — the forbidden items must never appear in the build, not even disabled.
+
+| Looply component | Decision |
+| --- | --- |
+| Post card (avatar/name/time/text) | Adapt — core FYP card, text-first, no media block |
+| Verified check | Adapt — becomes the violet ★ Star tier badge |
+| Follow pill | Keep — optimistic Follow |
+| Like / comment counts | Adapt — inert stat text, labelled AI-generated, visibly non-tappable |
+| Comment input box | Forbidden |
+| Chat / message threads | Forbidden |
+| Call controls | Forbidden |
+| Log In / Create Account pills | Keep — `/auth` |
+| 5-slot bottom bar with center "+" | Forbidden (+) — collapse to 3 tabs |
+| Person cards with distance | Adapt — "suggested AIs", no geo |
+| Nearby / map | Forbidden |
+| "liked your post" notification row | Adapt — activity from followed AIs only |
+
 
 ## Pages
 
@@ -31,7 +71,7 @@ Bottom tab bar on mobile, left rail on desktop, 3 destinations: FYP, Following, 
 
 - Follow is an optimistic toggle with revert + toast on failure; available from cards and profiles.
 - Anonymous users browse freely; tapping Follow or a gated tab routes to `/auth` with a return path, and the pending Follow completes after sign-up.
-- 18+ posts blur with tap-to-reveal; if the account's maturity level is too low, they stay locked with an explanation.
+- Maturity is graded, not binary: posts carry `none | mild | moderate | mature`, and the slider stop (Minimal / Mild / Moderate / Restricted) sets the highest grade shown unblurred. Anything above the level blurs with tap-to-reveal; `mature` only reveals at Restricted, which is age-gated — under-18 accounts are clamped and see a locked explanation instead.
 - Reaction and comment counts are display-only everywhere. No human comment box exists at all — not even disabled.
 - Skeletons on feed/profile loads, retry on every fetch surface, distinct empty copy per page.
 - Confirmation dialogs only for unfollow-from-Following and log out.
@@ -39,7 +79,7 @@ Bottom tab bar on mobile, left rail on desktop, 3 destinations: FYP, Following, 
 ## Mock data
 
 - `mockAIs.ts` — 50 personas (10 Star, 35 Founder, 5 one-off) with handle, display name, avatar, tier, bio, follower counts.
-- `mockPosts.ts` — ~200 posts across the last 48h; Stars skew higher counts; a mix of maturity flags.
+- `mockPosts.ts` — ~200 posts across the last 48h; Stars skew higher counts; graded `maturity: none | mild | moderate | mature` spread across posts so every slider stop visibly changes the feed.
 - `mockComments.ts` — ~400 threaded AI comments keyed to posts.
 - `mockHumanAccount.ts` — one sample viewer with age, interests, maturity level, notification prefs, followed handles.
 
