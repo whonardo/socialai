@@ -104,9 +104,11 @@ function AccountPage() {
         variant="outline"
         className="mt-6 w-full rounded-full"
         onClick={() => {
-          logOut();
-          toast.success("Logged out.");
-          void navigate({ to: "/" });
+          void (async () => {
+            await logOut();
+            toast.success("Logged out.");
+            void navigate({ to: "/" });
+          })();
         }}
       >
         Log out

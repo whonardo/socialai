@@ -1,12 +1,52 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import type { HumanAccount, MaturityLevel } from "./mock/types";
 import { maxLevelForAge } from "./mock/types";
-import { mockHumanAccount } from "./mock/mockHumanAccount";
 import type { AppRole, Permission } from "./agents/roles";
 import { can, isAdminRole } from "./agents/roles";
+import { claimSuperAdmin, getMyRole } from "./agents/agents.functions";
 
-const STORAGE_KEY = "socialai.account";
+const STORAGE_PREFIX = "socialai.account.";
+
+/**
+ * Session = a real Supabase auth session plus the viewer preferences we still
+ * keep client-side (interests, maturity, follows, notification prefs).
+ *
+ * Usernames are the credential; accounts without an email get a synthetic
+ * internal address so Supabase Auth has something to key on. Staff roles are
+ * never read from local state — they come from the server via has_role().
+ */
+function internalEmail(username: string) {
+  return `${username.toLowerCase()}@users.socialai.local`;
+}
+
+function storageKey(username: string) {
+  return `${STORAGE_PREFIX}${username.toLowerCase()}`;
+}
+
+function defaultAccount(username: string, age: number, interests: string[]): HumanAccount {
+  const level: MaturityLevel = age >= 18 ? "moderate" : "mild";
+  return {
+    username: username.toLowerCase(),
+    password: "",
+    email: "",
+    phone: "",
+    emailVerified: false,
+    phoneVerified: false,
+    age,
+    interests,
+    maturityLevel: level,
+    notifPrefs: {
+      newPostsFromFollowed: true,
+      newCommentThreads: false,
+      mutedHandles: [],
+    },
+    followedHandles: [],
+    role: "member",
+    joinedAt: new Date().toISOString(),
+  };
+}
 
 interface SessionValue {
   hydrated: boolean;
@@ -14,19 +54,19 @@ interface SessionValue {
   role: AppRole | null;
   isAdmin: boolean;
   can: (permission: Permission) => boolean;
-  /** Dev-only role switcher used until real RBAC lands. */
-  setRole: (role: AppRole) => void;
+  /** Bootstrap only: claims super admin while no super admin exists. */
+  claimAdmin: () => Promise<void>;
+  refreshRole: () => Promise<void>;
   signUp: (input: {
     username: string;
     password: string;
-    /** Optional contact methods; empty string when skipped. */
     email: string;
     phone: string;
     age: number;
     interests: string[];
-  }) => HumanAccount;
-  logIn: () => HumanAccount;
-  logOut: () => void;
+  }) => Promise<HumanAccount>;
+  logIn: (input: { username: string; password: string }) => Promise<HumanAccount>;
+  logOut: () => Promise<void>;
   update: (patch: Partial<HumanAccount>) => void;
   setFollowed: (handles: string[]) => void;
   isFollowing: (handle: string) => boolean;
@@ -34,70 +74,114 @@ interface SessionValue {
 
 const SessionContext = createContext<SessionValue | null>(null);
 
+function readPrefs(username: string): HumanAccount | null {
+  try {
+    const raw = window.localStorage.getItem(storageKey(username));
+    return raw ? (JSON.parse(raw) as HumanAccount) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [account, setAccount] = useState<HumanAccount | null>(null);
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setAccount(JSON.parse(raw) as HumanAccount);
-    } catch {
-      /* ignore corrupt storage */
-    }
-    setHydrated(true);
-  }, []);
+  const [role, setRole] = useState<AppRole | null>(null);
 
   const persist = useCallback((next: HumanAccount | null) => {
     setAccount(next);
+    if (!next) return;
     try {
-      if (next) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      else window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.setItem(storageKey(next.username), JSON.stringify(next));
     } catch {
       /* storage unavailable */
     }
   }, []);
 
+  const loadRole = useCallback(async () => {
+    try {
+      const { role: staffRole } = await getMyRole();
+      setRole(staffRole ?? "member");
+    } catch {
+      setRole("member");
+    }
+  }, []);
+
+  const adopt = useCallback(
+    async (username: string) => {
+      const stored = readPrefs(username);
+      persist(stored ?? defaultAccount(username, 18, []));
+      await loadRole();
+    },
+    [loadRole, persist],
+  );
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      const username = (data.session?.user.user_metadata?.["username"] as string | undefined) ?? null;
+      if (active && username) await adopt(username);
+      if (active) setHydrated(true);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [adopt]);
+
   const value = useMemo<SessionValue>(
     () => ({
       hydrated,
       account,
-      role: account?.role ?? null,
-      isAdmin: isAdminRole(account?.role),
-      can: (permission) => can(account?.role, permission),
-      setRole: (role) => {
-        if (!account) return;
-        persist({ ...account, role });
+      role: account ? role : null,
+      isAdmin: isAdminRole(role),
+      can: (permission) => can(role, permission),
+      claimAdmin: async () => {
+        await claimSuperAdmin();
+        await loadRole();
       },
-      signUp: ({ username, password, email, phone, age, interests }) => {
-        const level: MaturityLevel = age >= 18 ? "moderate" : "mild";
-        const next: HumanAccount = {
-          username: username.toLowerCase(),
+      refreshRole: loadRole,
+      signUp: async ({ username, password, email, phone, age, interests }) => {
+        const normalized = username.toLowerCase();
+        const { error } = await supabase.auth.signUp({
+          email: internalEmail(normalized),
           password,
+          options: { data: { username: normalized } },
+        });
+        if (error) {
+          throw new Error(
+            error.message.toLowerCase().includes("already")
+              ? "That username is already taken."
+              : error.message,
+          );
+        }
+        const next: HumanAccount = {
+          ...defaultAccount(normalized, age, interests),
           email,
           phone,
-          emailVerified: !!email,
-          phoneVerified: false,
-          age,
-          interests,
-          maturityLevel: level,
-          notifPrefs: {
-            newPostsFromFollowed: true,
-            newCommentThreads: false,
-            mutedHandles: [],
-          },
-          followedHandles: [],
-          role: "member",
-          joinedAt: new Date().toISOString(),
+          emailVerified: false,
         };
         persist(next);
+        await loadRole();
         return next;
       },
-      logIn: () => {
-        persist(mockHumanAccount);
-        return mockHumanAccount;
+      logIn: async ({ username, password }) => {
+        const normalized = username.toLowerCase();
+        const { error } = await supabase.auth.signInWithPassword({
+          email: internalEmail(normalized),
+          password,
+        });
+        if (error) throw new Error("That username and password don't match an account.");
+        const next = readPrefs(normalized) ?? defaultAccount(normalized, 18, []);
+        persist(next);
+        await loadRole();
+        return next;
       },
-      logOut: () => persist(null),
+      logOut: async () => {
+        await supabase.auth.signOut();
+        setAccount(null);
+        setRole(null);
+      },
       update: (patch) => {
         if (!account) return;
         const next = { ...account, ...patch };
@@ -113,7 +197,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       },
       isFollowing: (handle) => !!account?.followedHandles.includes(handle),
     }),
-    [account, hydrated, persist],
+    [account, hydrated, loadRole, persist, role],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
