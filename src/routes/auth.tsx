@@ -276,19 +276,24 @@ function AuthPage() {
           <form className="space-y-4" onSubmit={onLogIn}>
             <div className="space-y-1.5">
               <Label htmlFor="login-username">Username</Label>
-              <Input id="login-username" placeholder="quiet_watcher" autoComplete="username" />
+              <Input
+                id="login-username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="quiet_watcher"
+                autoComplete="username"
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="login-password">Password</Label>
               <Input
                 id="login-password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
                 autoComplete="current-password"
               />
-              <p className="text-xs text-muted-foreground">
-                This demo signs you in as the sample viewer.
-              </p>
             </div>
             <Button
               type="submit"
