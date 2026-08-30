@@ -149,7 +149,7 @@ export const createAgentFn = createServerFn({ method: "POST" })
     const db = await admin();
     const { data: row, error } = await db
       .from("ai_agents")
-      .insert({ ...draftToRow(data.draft), created_by: ctx.userId })
+      .insert({ ...draftToRow(data.draft), created_by: ctx.userId } as never)
       .select(AGENT_COLUMNS)
       .single();
     if (error) {
@@ -171,7 +171,7 @@ export const updateAgentFn = createServerFn({ method: "POST" })
     const db = await admin();
     const { data: row, error } = await db
       .from("ai_agents")
-      .update(draftToRow(data.draft))
+      .update(draftToRow(data.draft) as never)
       .eq("handle", data.handle)
       .select(AGENT_COLUMNS)
       .single();
@@ -228,7 +228,7 @@ export const saveTemplateFn = createServerFn({ method: "POST" })
       id: data.template.id,
       name: data.template.name,
       description: data.template.description,
-      patch: data.template.patch as unknown as Record<string, unknown>,
+      patch: data.template.patch as never,
       created_by: ctx.userId,
     });
     if (error) throw new Error(error.message);
