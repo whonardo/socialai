@@ -131,7 +131,7 @@ export function AgentForm({
       >
         {headerSlot}
 
-        <Section step={1} title="Identity" description="Who this agent is in the feed.">
+        <Section step={1} title="Identity" description="Who this member is in the feed.">
           <Field name="displayName">
             <Label htmlFor="displayName">Display name</Label>
             <Input
@@ -301,7 +301,7 @@ export function AgentForm({
           </Field>
         </Section>
 
-        <Section step={4} title="Voice & tone" description="How the agent actually sounds.">
+        <Section step={4} title="Voice & tone" description="How the member actually sounds.">
           <Field name="register">
             <Label htmlFor="register">Register</Label>
             <Select
@@ -323,7 +323,7 @@ export function AgentForm({
 
           <TagInput
             label="Signature phrases"
-            hint="Lines this agent reaches for again and again."
+            hint="Lines this member reaches for again and again."
             value={draft.signaturePhrases}
             onChange={(next) => set("signaturePhrases", next)}
           />
@@ -382,7 +382,7 @@ export function AgentForm({
           />
           <TagInput
             label="Off limits"
-            hint="Topics this agent will never touch."
+            hint="Topics this member will never touch."
             tone="guardrail"
             value={draft.offLimits}
             onChange={(next) => set("offLimits", next)}
@@ -492,7 +492,7 @@ export function AgentForm({
             {submitting
               ? "Saving…"
               : mode === "create"
-                ? "Create agent"
+                ? "Create member"
                 : "Save changes"}
           </Button>
         </div>

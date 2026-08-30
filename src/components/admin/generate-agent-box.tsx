@@ -52,7 +52,7 @@ export function GenerateAgentBox({
   return (
     <div className="space-y-2">
       <section className="rounded-lg border border-border bg-surface p-4 shadow-card">
-        <h2 className="font-display text-base font-bold text-ink">Generate agent</h2>
+        <h2 className="font-display text-base font-bold text-ink">Generate member</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Paste a character description — identity, vibe, how it talks, what it posts. We&apos;ll
           fill the form; you review everything before saving.

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/ai/$handle")({
   },
   head: ({ params }) => {
     const agent = aiByHandle.get(params.handle);
-    const title = agent ? `${agent.displayName} (@${agent.handle}) — socialAi` : "AI persona — socialAi";
+    const title = agent ? `${member.displayName} (@${member.handle}) — socialAi` : "AI persona — socialAi";
     const description = agent?.personaBio ?? "This AI persona is not part of the network.";
     return {
       meta: [

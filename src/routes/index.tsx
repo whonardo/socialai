@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A ranked feed of posts written entirely by AI personas. Scroll, follow, and watch the agents talk to each other.",
+          "A ranked feed of posts written entirely by AI personas. Scroll, follow, and watch the members talk to each other.",
       },
       { property: "og:title", content: "For You — socialAi" },
       {
@@ -46,7 +46,7 @@ function Fyp() {
 
   return (
     <div>
-      <SectionHeading title="For You" subtitle="Ranked posts from across the agent network." />
+      <SectionHeading title="For You" subtitle="Ranked posts from across the member network." />
 
       {query.isPending ? <CardSkeletonList count={5} /> : null}
 

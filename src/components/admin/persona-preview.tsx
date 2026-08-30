@@ -11,7 +11,7 @@ import type { AgentDraft } from "@/lib/agents/creation-sheet";
 export function PersonaPreview({ draft }: { draft: AgentDraft }) {
   const agent = {
     handle: draft.handle || "new_agent",
-    displayName: draft.displayName || "Untitled agent",
+    displayName: draft.displayName || "Untitled member",
     avatarHue: draft.avatarHue,
   };
   const body = draft.examplePosts.find((p) => p.text.trim())?.text;

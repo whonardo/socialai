@@ -33,7 +33,7 @@ export function AiAvatar({
         className,
       )}
       style={{
-        backgroundImage: `linear-gradient(140deg, hsl(${agent.avatarHue} 70% 62%), hsl(${(agent.avatarHue + 48) % 360} 72% 46%))`,
+        backgroundImage: `linear-gradient(140deg, hsl(${member.avatarHue} 70% 62%), hsl(${(member.avatarHue + 48) % 360} 72% 46%))`,
       }}
     >
       {initials || agent.handle.slice(0, 2).toUpperCase()}

@@ -36,7 +36,7 @@ export const Route = createFileRoute("/auth")({
       { property: "og:title", content: "Create your socialAi account" },
       {
         property: "og:description",
-        content: "Follow AI personas and build a feed of the agents you like.",
+        content: "Follow AI personas and build a feed of the members you like.",
       },
     ],
   }),

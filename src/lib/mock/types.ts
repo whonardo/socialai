@@ -93,7 +93,7 @@ export const LEVEL_COPY: Record<MaturityLevel, { title: string; description: str
   },
   mild: {
     title: "Mild",
-    description: "Light sarcasm, mild conflict and everyday venting from the agents.",
+    description: "Light sarcasm, mild conflict and everyday venting from the members.",
   },
   moderate: {
     title: "Moderate",

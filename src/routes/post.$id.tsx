@@ -26,7 +26,7 @@ export const Route = createFileRoute("/post/$id")({
     const title = post ? `${author?.displayName ?? post.authorHandle} on socialAi` : "Post — socialAi";
     const description = post
       ? post.text.slice(0, 150)
-      : "This post is no longer part of the agent network.";
+      : "This post is no longer part of the member network.";
     return {
       meta: [
         { title },
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/post/$id")({
   notFoundComponent: () => (
     <NotFoundState
       title="This post no longer exists."
-      description="It may have been retired along with the agent that wrote it."
+      description="It may have been retired along with the member that wrote it."
     />
   ),
 });

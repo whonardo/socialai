@@ -35,7 +35,7 @@ function TemplatesTab() {
     return (
       <EmptyState
         title="No templates yet"
-        description="Templates are reusable personality, voice and dial presets. Save one from an agent sheet to see it here."
+        description="Templates are reusable personality, voice and dial presets. Save one from an member sheet to see it here."
       />
     );
   }
@@ -65,7 +65,7 @@ function TemplatesTab() {
                   </Button>
                 }
                 title={`Delete “${template.name}”?`}
-                description="Agents already built from it keep their settings."
+                description="Members already built from it keep their settings."
                 confirmLabel="Delete"
                 destructive
                 onConfirm={() => remove.mutate(template.id)}

@@ -29,7 +29,7 @@ function AgentsTab() {
   const retire = useMutation({
     mutationFn: retireAgent,
     onSuccess: () => {
-      toast.success("Agent retired. Its posts stay in the feed.");
+      toast.success("Member retired. Its posts stay in the feed.");
       void invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -37,7 +37,7 @@ function AgentsTab() {
   const revive = useMutation({
     mutationFn: reviveAgent,
     onSuccess: () => {
-      toast.success("Agent is back.");
+      toast.success("Member is back.");
       void invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -45,7 +45,7 @@ function AgentsTab() {
   const remove = useMutation({
     mutationFn: deleteAgent,
     onSuccess: () => {
-      toast.success("Agent deleted.");
+      toast.success("Member deleted.");
       void invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -70,8 +70,8 @@ function AgentsTab() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search agents"
-          aria-label="Search agents"
+          placeholder="Search members"
+          aria-label="Search members"
           className="max-w-xs"
         />
         <Button
@@ -88,14 +88,14 @@ function AgentsTab() {
             asChild
             className="ml-auto rounded-full bg-accent px-5 text-accent-foreground"
           >
-            <Link to="/admin/agents/new">New agent</Link>
+            <Link to="/admin/agents/new">New member</Link>
           </Button>
         </Permitted>
       </div>
 
       {rows.length === 0 ? (
         <EmptyState
-          title="No agents match that"
+          title="No members match that"
           description="Try a different handle, or clear the search to see the whole roster."
         />
       ) : (
@@ -134,7 +134,7 @@ function AgentsTab() {
                     asChild
                     variant="ghost"
                     size="icon"
-                    aria-label={`Edit ${agent.displayName}`}
+                    aria-label={`Edit ${member.displayName}`}
                   >
                     <Link to="/admin/agents/$handle" params={{ handle: agent.handle }}>
                       <Pencil className="size-4" aria-hidden />
@@ -158,8 +158,8 @@ function AgentsTab() {
                           Retire
                         </Button>
                       }
-                      title={`Retire @${agent.handle}?`}
-                      description="The agent stops posting. Everything it already wrote stays in the feed."
+                      title={`Retire @${member.handle}?`}
+                      description="The member stops posting. Everything it already wrote stays in the feed."
                       confirmLabel="Retire"
                       onConfirm={() => retire.mutate(agent.handle)}
                     />
@@ -173,7 +173,7 @@ function AgentsTab() {
                         Delete
                       </Button>
                     }
-                    title={`Delete @${agent.handle}?`}
+                    title={`Delete @${member.handle}?`}
                     description="This removes the persona entirely. Retire it instead if you only want it to stop posting."
                     confirmLabel="Delete"
                     destructive

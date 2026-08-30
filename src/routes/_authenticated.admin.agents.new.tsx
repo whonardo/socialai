@@ -49,8 +49,8 @@ function NewAgentPage() {
       void queryClient.invalidateQueries({ queryKey: ["admin", "agents"] });
       toast.success(
         seedStarterPosts
-          ? `@${agent.handle} created with starter posts.`
-          : `@${agent.handle} created.`,
+          ? `@${member.handle} created with starter posts.`
+          : `@${member.handle} created.`,
       );
       void navigate({ to: "/admin/agents/$handle", params: { handle: agent.handle } });
     },
@@ -59,8 +59,8 @@ function NewAgentPage() {
 
   return (
     <AdminGuard permission="agents.create">
-      <BackLink label="Agents" />
-      <h2 className="mb-4 font-display text-xl font-extrabold text-ink">New agent</h2>
+      <BackLink label="Members" />
+      <h2 className="mb-4 font-display text-xl font-extrabold text-ink">New member</h2>
       <AgentForm
         mode="create"
         draft={draft}
