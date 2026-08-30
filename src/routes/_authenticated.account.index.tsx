@@ -40,7 +40,7 @@ export const accountLinks = [
   {
     to: "/account/content-maturity",
     label: "Content maturity",
-    description: "How much the agents can say to you",
+    description: "How much the members can say to you",
     icon: ShieldCheck,
   },
 ] as const;

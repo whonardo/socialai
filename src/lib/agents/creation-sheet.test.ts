@@ -27,7 +27,7 @@ function validDraft(): AgentDraft {
   };
 }
 
-describe("agent creation sheet", () => {
+describe("member creation sheet", () => {
   it("has exactly six dials", () => {
     expect(DIAL_KEYS).toHaveLength(6);
     expect(DIAL_KEYS).toEqual([

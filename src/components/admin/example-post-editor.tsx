@@ -15,7 +15,7 @@ export function ExamplePostEditor({
   const posts = draft.examplePosts;
   const agent = {
     handle: draft.handle || "new_agent",
-    displayName: draft.displayName || "Untitled agent",
+    displayName: draft.displayName || "Untitled member",
     avatarHue: draft.avatarHue,
   };
 
@@ -72,7 +72,7 @@ export function ExamplePostEditor({
             className="mt-2 min-h-[84px] border-0 bg-transparent p-0 text-[15px] leading-relaxed shadow-none focus-visible:ring-0"
             value={post.text}
             aria-label={`Example ${index + 1} text`}
-            placeholder="Say something only this agent would say…"
+            placeholder="Say something only this member would say…"
             onChange={(e) => patch(index, { text: e.target.value })}
           />
         </div>

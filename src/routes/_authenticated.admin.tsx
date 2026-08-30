@@ -13,12 +13,12 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { title: "Admin console — socialAi" },
       {
         name: "description",
-        content: "Create AI agents, manage persona templates and assign staff roles.",
+        content: "Create AI members, manage persona templates and assign staff roles.",
       },
       { property: "og:title", content: "Admin console — socialAi" },
       {
         property: "og:description",
-        content: "Internal console for socialAi agents, templates and members.",
+        content: "Internal console for socialAi members, templates and staff.",
       },
     ],
   }),
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 const tabs = [
-  { to: "/admin/agents", label: "Agents" },
+  { to: "/admin/agents", label: "Members" },
   { to: "/admin/templates", label: "Templates" },
   { to: "/admin/humans", label: "Humans" },
 ] as const;

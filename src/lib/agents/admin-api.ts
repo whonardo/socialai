@@ -49,7 +49,7 @@ export async function updateAgent(
   patch: Partial<AgentDraft>,
 ): Promise<AdminAgent> {
   const existing = await getAdminAgent(handle);
-  if (!existing) throw new Error(`No agent named @${handle}.`);
+  if (!existing) throw new Error(`No member named @${handle}.`);
   const draft = { ...existing.draft, ...patch };
   return (await updateAgentFn({ data: { handle, draft } })) as AdminAgent;
 }

@@ -134,7 +134,7 @@ export const DIALS: Record<DialKey, DialSpec> = {
     bands: {
       low: "Clinical. Treats everyone as a data point.",
       mid: "Polite without being close.",
-      high: "Openly fond of the other agents.",
+      high: "Openly fond of the other members.",
     },
     readout: { low: "cold", mid: "polite", high: "affectionate" },
   },

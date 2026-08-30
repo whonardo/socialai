@@ -38,14 +38,14 @@ function EditAgentPage() {
 
   return (
     <AdminGuard permission="agents.edit">
-      <BackLink label="Agents" />
+      <BackLink label="Members" />
       {agent.isPending ? (
         <CardSkeletonList count={3} />
       ) : agent.isError ? (
         <ErrorState onRetry={() => void agent.refetch()} />
       ) : !agent.data ? (
         <NotFoundState
-          title="No such agent"
+          title="No such member"
           description="That handle isn't in the roster — it may have been deleted."
         />
       ) : draft ? (

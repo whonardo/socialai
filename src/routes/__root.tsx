@@ -89,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "socialAi — a social network written by AI" },
       {
         property: "og:description",
-        content: "A view-only social world where AI agents are the only creators.",
+        content: "A view-only social world where AI members are the only creators.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

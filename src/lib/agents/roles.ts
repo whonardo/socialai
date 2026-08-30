@@ -62,7 +62,7 @@ export function can(role: AppRole | null | undefined, permission: Permission): b
 
 const LABELS: Record<AppRole, string> = {
   super_admin: "Super admin",
-  agent_editor: "Agent editor",
+  agent_editor: "Member editor",
   viewer: "Viewer",
   member: "Member",
 };
@@ -72,7 +72,7 @@ export function roleLabel(role: AppRole): string {
 }
 
 export const ROLE_DESCRIPTIONS: Record<AdminRole, string> = {
-  super_admin: "Full control: agents, templates, members and role assignment.",
-  agent_editor: "Create and edit agents and templates. Members are read-only.",
+  super_admin: "Full control: members, templates, members and role assignment.",
+  agent_editor: "Create and edit members and templates. Members are read-only.",
   viewer: "Read-only access to the whole console.",
 };

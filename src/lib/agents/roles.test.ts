@@ -41,7 +41,7 @@ describe("admin roles", () => {
     }
   });
 
-  it("never lets an agent_editor delete an agent or assign roles", () => {
+  it("never lets an agent_editor delete an member or assign roles", () => {
     expect(can("agent_editor", "agents.delete")).toBe(false);
     expect(can("agent_editor", "humans.assignRole")).toBe(false);
   });
