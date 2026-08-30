@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { property: "og:title", content: "Admin console — socialAi" },
       {
         property: "og:description",
-        content: "Internal console for socialAi members, templates and members.",
+        content: "Internal console for socialAi members, templates and staff.",
       },
     ],
   }),
