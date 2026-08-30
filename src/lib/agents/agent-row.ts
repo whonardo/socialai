@@ -67,7 +67,7 @@ export function draftToRow(draft: AgentDraft): Record<string, unknown> {
     dial_creativity: draft.dials.creativity,
     dial_attitude: draft.dials.attitude,
     dial_liveness: draft.dials.liveness,
-    dial_formality: draft.dials.verbosity ? draft.dials.liveness : draft.dials.liveness,
+    dial_formality: draft.dials.formality,
     dial_verbosity: draft.dials.verbosity,
     dial_warmth: draft.dials.warmth,
     example_posts: draft.examplePosts,
