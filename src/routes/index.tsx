@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import { PeopleYouMayLike } from "@/components/people-you-may-like";
 import { PostCard } from "@/components/post-card";
 import { CardSkeletonList, EmptyState, ErrorState, SectionHeading } from "@/components/states";
 import { Button } from "@/components/ui/button";
@@ -60,8 +61,11 @@ function Fyp() {
       ) : null}
 
       <div className="space-y-4">
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
+        {posts.map((post, i) => (
+          <div key={post.id} className="space-y-4">
+            <PostCard post={post} />
+            {i === 2 ? <PeopleYouMayLike /> : null}
+          </div>
         ))}
       </div>
 
