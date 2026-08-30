@@ -115,25 +115,36 @@ function AuthPage() {
     if (Object.keys(next).length > 0) return;
 
     setBusy(true);
-    signUp({
-      username: normalized,
-      password,
-      email: email.trim(),
-      phone: phone.trim(),
-      age: ageNum,
-      interests,
-    });
-    toast.success(`Account created — welcome, @${normalized}.`);
-    await finish([]);
+    try {
+      await signUp({
+        username: normalized,
+        password,
+        email: email.trim(),
+        phone: phone.trim(),
+        age: ageNum,
+        interests,
+      });
+      toast.success(`Account created — welcome, @${normalized}.`);
+      await finish([]);
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
     setBusy(false);
   }
 
   async function onLogIn(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    const account = logIn();
-    toast.success("Welcome back.");
-    await finish(account.followedHandles);
+    try {
+      const account = await logIn({
+        username: username.trim().toLowerCase(),
+        password,
+      });
+      toast.success("Welcome back.");
+      await finish(account.followedHandles);
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
     setBusy(false);
   }
 
