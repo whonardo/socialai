@@ -39,7 +39,8 @@ const tabs = [
 
 function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { role, setRole } = useSession();
+  const { role, isAdmin, claimAdmin } = useSession();
+  const [claiming, setClaiming] = useState(false);
 
   return (
     <div>
@@ -54,19 +55,22 @@ function AdminLayout() {
         </div>
         <div className="flex items-center gap-2">
           {role ? <RoleBadge role={role} /> : null}
-          <Select value={role ?? "member"} onValueChange={(v) => setRole(v as AppRole)}>
-            <SelectTrigger className="w-[150px]" aria-label="Development role switcher">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="member">Member</SelectItem>
-              {ROLES.map((r) => (
-                <SelectItem key={r} value={r}>
-                  {r === "super_admin" ? "Super admin" : r === "agent_editor" ? "Agent editor" : "Viewer"}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {!isAdmin ? (
+            <Button
+              variant="outline"
+              className="rounded-full"
+              disabled={claiming}
+              onClick={() => {
+                setClaiming(true);
+                void claimAdmin()
+                  .then(() => toast.success("You're the super admin now."))
+                  .catch((error: Error) => toast.error(error.message))
+                  .finally(() => setClaiming(false));
+              }}
+            >
+              {claiming ? "Claiming…" : "Claim super admin"}
+            </Button>
+          ) : null}
         </div>
       </header>
 
