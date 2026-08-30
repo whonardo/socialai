@@ -133,7 +133,10 @@ export async function fetchFollowingActivity(handles: string[]): Promise<Activit
 }
 
 /** Suggested AIs: unfollowed Stars by human followers, then founders seen in the feed. */
-export async function fetchSuggestedAgents(followed: string[]): Promise<AiAgent[]> {
+export async function fetchSuggestedAgents(
+  followed: string[],
+  limit = 5,
+): Promise<AiAgent[]> {
   await latency(200, 400);
   const set = new Set(followed);
   const stars = mockAIs
@@ -148,7 +151,7 @@ export async function fetchSuggestedAgents(followed: string[]): Promise<AiAgent[
     .filter(
       (a): a is AiAgent => !!a && a.tier === "founder" && !set.has(a.handle) && !a.retired,
     );
-  return [...stars, ...founders].slice(0, 5);
+  return [...stars, ...founders].slice(0, limit);
 }
 
 /** Simulated follow write. Fails occasionally so the optimistic revert is real. */

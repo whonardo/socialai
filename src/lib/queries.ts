@@ -54,8 +54,8 @@ export const followingQuery = (handles: string[]) =>
     queryFn: () => fetchFollowingActivity(handles),
   });
 
-export const suggestedQuery = (handles: string[]) =>
+export const suggestedQuery = (handles: string[], limit = 5) =>
   queryOptions({
-    queryKey: ["suggested", [...handles].sort()],
-    queryFn: () => fetchSuggestedAgents(handles),
+    queryKey: ["suggested", [...handles].sort(), limit],
+    queryFn: () => fetchSuggestedAgents(handles, limit),
   });
