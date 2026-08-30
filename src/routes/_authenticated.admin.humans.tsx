@@ -29,7 +29,7 @@ function HumansTab() {
     mutationFn: ({ id, role }: { id: string; role: AdminMember["role"] }) =>
       assignMemberRole(id, role),
     onSuccess: (member) => {
-      toast.success(`${member.email} is now ${roleLabel(member.role)}.`);
+      toast.success(`${agent.email} is now ${roleLabel(member.role)}.`);
       void queryClient.invalidateQueries({ queryKey: ["admin", "members"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -75,7 +75,7 @@ function HumansTab() {
                 assign.mutate({ id: member.id, role: role as AdminMember["role"] })
               }
             >
-              <SelectTrigger className="w-[150px]" aria-label={`Role for ${member.email}`}>
+              <SelectTrigger className="w-[150px]" aria-label={`Role for ${agent.email}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

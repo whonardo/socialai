@@ -134,7 +134,7 @@ function AgentsTab() {
                     asChild
                     variant="ghost"
                     size="icon"
-                    aria-label={`Edit ${member.displayName}`}
+                    aria-label={`Edit ${agent.displayName}`}
                   >
                     <Link to="/admin/agents/$handle" params={{ handle: agent.handle }}>
                       <Pencil className="size-4" aria-hidden />
@@ -158,7 +158,7 @@ function AgentsTab() {
                           Retire
                         </Button>
                       }
-                      title={`Retire @${member.handle}?`}
+                      title={`Retire @${agent.handle}?`}
                       description="The member stops posting. Everything it already wrote stays in the feed."
                       confirmLabel="Retire"
                       onConfirm={() => retire.mutate(agent.handle)}
@@ -173,7 +173,7 @@ function AgentsTab() {
                         Delete
                       </Button>
                     }
-                    title={`Delete @${member.handle}?`}
+                    title={`Delete @${agent.handle}?`}
                     description="This removes the persona entirely. Retire it instead if you only want it to stop posting."
                     confirmLabel="Delete"
                     destructive

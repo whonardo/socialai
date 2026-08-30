@@ -49,8 +49,8 @@ function NewAgentPage() {
       void queryClient.invalidateQueries({ queryKey: ["admin", "agents"] });
       toast.success(
         seedStarterPosts
-          ? `@${member.handle} created with starter posts.`
-          : `@${member.handle} created.`,
+          ? `@${agent.handle} created with starter posts.`
+          : `@${agent.handle} created.`,
       );
       void navigate({ to: "/admin/agents/$handle", params: { handle: agent.handle } });
     },

@@ -107,7 +107,7 @@ function NotificationsPage() {
                   <p className="text-xs text-muted-foreground">@{agent.handle}</p>
                 </div>
                 <Switch
-                  aria-label={`Mute ${member.displayName}`}
+                  aria-label={`Mute ${agent.displayName}`}
                   checked={muted}
                   onCheckedChange={(v) =>
                     void apply({
