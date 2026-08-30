@@ -1,19 +1,25 @@
-import { mockAIs } from "@/lib/mock/mockAIs";
-import { mockPosts } from "@/lib/mock/mockPosts";
 import type { AiAgent } from "@/lib/mock/types";
-import { agentDraftSchema, emptyAgentDraft } from "./creation-sheet";
 import type { AgentDraft } from "./creation-sheet";
-import { SEED_TEMPLATES, mergeTemplate } from "./templates";
+import {
+  createAgentFn,
+  deleteAgentFn,
+  deleteTemplateFn,
+  getAgent,
+  listAgents,
+  listTemplatesFn,
+  saveTemplateFn,
+  setAgentRetired,
+  updateAgentFn,
+} from "./agents.functions";
+import { mergeTemplate } from "./templates";
 import type { AgentTemplate } from "./templates";
 import type { AdminRole } from "./roles";
 
 /**
- * Mock admin data layer. Same signatures the Supabase-backed layer will expose,
- * so swapping the clerk later touches only these function bodies.
+ * Admin data layer. Every agent read and write goes through server functions
+ * that authorise the caller against the user_roles table — the browser never
+ * touches ai_agents directly, and never can.
  */
-
-const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-const latency = () => delay(140 + Math.random() * 260);
 
 export interface AdminAgent extends AiAgent {
   draft: AgentDraft;
@@ -21,140 +27,55 @@ export interface AdminAgent extends AiAgent {
   updatedAt: string;
 }
 
-function agentToDraft(agent: AiAgent): AgentDraft {
-  return {
-    ...emptyAgentDraft(),
-    handle: agent.handle,
-    displayName: agent.displayName,
-    avatarHue: agent.avatarHue,
-    tier: agent.tier,
-    unlisted: agent.unlisted,
-    personaBio: agent.personaBio,
-    essence: agent.personaBio,
-    niche: "general",
-    examplePosts: mockPosts
-      .filter((p) => p.authorHandle === agent.handle)
-      .slice(0, 3)
-      .map((p) => ({ text: p.text, kind: "post" as const })),
-  };
-}
-
-function draftToAgent(draft: AgentDraft, base?: AdminAgent): AdminAgent {
-  return {
-    handle: draft.handle,
-    displayName: draft.displayName,
-    avatarHue: draft.avatarHue,
-    tier: draft.tier,
-    personaBio: draft.personaBio,
-    humanFollowerCount: base?.humanFollowerCount ?? 0,
-    aiFollowingCount: base?.aiFollowingCount ?? 0,
-    unlisted: draft.unlisted,
-    retired: base?.retired ?? false,
-    draft,
-    createdBy: base?.createdBy ?? "you@socialai.watch",
-    updatedAt: new Date().toISOString(),
-  };
-}
-
-let agents: AdminAgent[] = [];
-let templates: AgentTemplate[] = [];
-
-function seed() {
-  agents = mockAIs.map((a) => ({
-    ...a,
-    draft: agentToDraft(a),
-    createdBy: "seed",
-    updatedAt: "2026-08-29T00:00:00.000Z",
-  }));
-  templates = structuredClone(SEED_TEMPLATES);
-}
-
-seed();
-
-/** Test hook — restores the seeded store. */
-export function __resetAdminStore() {
-  seed();
-}
-
 export async function listAdminAgents(): Promise<AdminAgent[]> {
-  await latency();
-  return agents.map((a) => ({ ...a }));
+  return (await listAgents()) as AdminAgent[];
 }
 
 export async function getAdminAgent(handle: string): Promise<AdminAgent | null> {
-  await latency();
-  const found = agents.find((a) => a.handle === handle);
-  return found ? { ...found } : null;
+  return (await getAgent({ data: { handle } })) as AdminAgent | null;
 }
 
 export async function checkHandleAvailable(handle: string): Promise<boolean> {
-  await delay(120);
-  return !agents.some((a) => a.handle === handle);
+  const found = await getAgent({ data: { handle } });
+  return !found;
 }
 
 export async function createAgent(draft: AgentDraft): Promise<AdminAgent> {
-  await latency();
-  const parsed = agentDraftSchema.safeParse(draft);
-  if (!parsed.success) {
-    throw new Error(parsed.error.issues[0]?.message ?? "This agent sheet isn't complete yet.");
-  }
-  if (agents.some((a) => a.handle === draft.handle)) {
-    throw new Error(`@${draft.handle} is already taken.`);
-  }
-  const created = draftToAgent(structuredClone(draft));
-  agents = [created, ...agents];
-  return { ...created };
+  return (await createAgentFn({ data: { draft } })) as AdminAgent;
 }
 
 export async function updateAgent(
   handle: string,
   patch: Partial<AgentDraft>,
 ): Promise<AdminAgent> {
-  await latency();
-  const existing = agents.find((a) => a.handle === handle);
+  const existing = await getAdminAgent(handle);
   if (!existing) throw new Error(`No agent named @${handle}.`);
-  const nextDraft = { ...existing.draft, ...patch };
-  const parsed = agentDraftSchema.safeParse(nextDraft);
-  if (!parsed.success) {
-    throw new Error(parsed.error.issues[0]?.message ?? "That change isn't valid.");
-  }
-  const updated = draftToAgent(nextDraft, existing);
-  agents = agents.map((a) => (a.handle === handle ? updated : a));
-  return { ...updated };
+  const draft = { ...existing.draft, ...patch };
+  return (await updateAgentFn({ data: { handle, draft } })) as AdminAgent;
 }
 
 export async function retireAgent(handle: string): Promise<void> {
-  await latency();
-  agents = agents.map((a) => (a.handle === handle ? { ...a, retired: true } : a));
+  await setAgentRetired({ data: { handle, retired: true } });
 }
 
 export async function reviveAgent(handle: string): Promise<void> {
-  await latency();
-  agents = agents.map((a) => (a.handle === handle ? { ...a, retired: false } : a));
+  await setAgentRetired({ data: { handle, retired: false } });
 }
 
 export async function deleteAgent(handle: string): Promise<void> {
-  await latency();
-  agents = agents.filter((a) => a.handle !== handle);
+  await deleteAgentFn({ data: { handle } });
 }
 
 export async function listTemplates(): Promise<AgentTemplate[]> {
-  await latency();
-  return structuredClone(templates);
+  return await listTemplatesFn();
 }
 
 export async function saveTemplate(template: AgentTemplate): Promise<AgentTemplate> {
-  await latency();
-  const exists = templates.some((t) => t.id === template.id);
-  templates = exists
-    ? templates.map((t) => (t.id === template.id ? template : t))
-    : [...templates, template];
-  return structuredClone(template);
+  return await saveTemplateFn({ data: { template } });
 }
 
 export async function deleteTemplate(id: string): Promise<void> {
-  await latency();
-  templates = templates.filter((t) => t.id !== id);
+  await deleteTemplateFn({ data: { id } });
 }
 
 /** Pure — no write, no network. */
@@ -165,7 +86,7 @@ export function applyTemplate(template: AgentTemplate, draft: AgentDraft): Agent
 /**
  * Member row visible to admins. Deliberately excludes interests and the
  * followed-handle list: one member's mailbox is never readable by another,
- * admins included.
+ * admins included. Still mock data — member accounts move to the backend next.
  */
 export interface AdminMember {
   id: string;
@@ -232,7 +153,6 @@ const members: AdminMember[] = [
 ];
 
 export async function listMembers(): Promise<AdminMember[]> {
-  await latency();
   return members.map((m) => ({ ...m }));
 }
 
@@ -240,7 +160,6 @@ export async function assignMemberRole(
   id: string,
   role: AdminMember["role"],
 ): Promise<AdminMember> {
-  await latency();
   const member = members.find((m) => m.id === id);
   if (!member) throw new Error("Member not found.");
   member.role = role;
