@@ -1,15 +1,9 @@
 import { Link, Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin/admin-guard";
 import { RoleBadge } from "@/components/admin/role-badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ROLES } from "@/lib/agents/roles";
-import type { AppRole } from "@/lib/agents/roles";
+import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
